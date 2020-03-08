@@ -3,6 +3,7 @@ package info.kupchenko.sandbox.spring.circling;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.nio.file.attribute.UserPrincipalNotFoundException;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
@@ -52,6 +53,16 @@ public class John extends StatedBean implements Husband {
     }
 
     @Override
+    public void onContextStarted() {
+        System.out.println(this);
+        try {
+            rest();
+        } catch (InterruptedException e) {
+            System.out.println(name + "interrupted");;
+        }
+    }
+
+    @Override
     public String name() {
         return name;
     }
@@ -65,10 +76,10 @@ public class John extends StatedBean implements Husband {
     }
 
     @Override
-    public long getMoney() throws InterruptedException {
+    public long getMoney(Essence sender) throws InterruptedException {
         Thread.sleep(ThreadLocalRandom.current().nextLong(DEFAULT_MAX_DELAY));
         long amount = ThreadLocalRandom.current().nextLong(MAX_AMOUNT);
-        System.out.println(String.format("%s gives %d $", name, amount));
+        System.out.println(String.format("%s gives %d$ to %s", name, amount, sender.name()));
         return amount;
     }
 

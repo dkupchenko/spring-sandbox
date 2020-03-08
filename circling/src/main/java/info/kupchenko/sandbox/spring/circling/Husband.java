@@ -9,5 +9,5 @@ package info.kupchenko.sandbox.spring.circling;
  * Last review on 07.03.2020
  */
 public interface Husband extends Essence {
-    long getMoney() throws InterruptedException;
+    long getMoney(Essence sender) throws InterruptedException;
 }

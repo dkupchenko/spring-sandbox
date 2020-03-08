@@ -1,6 +1,7 @@
 package info.kupchenko.sandbox.spring.circling;
 
 import org.springframework.context.event.ContextRefreshedEvent;
+import org.springframework.context.event.ContextStartedEvent;
 import org.springframework.context.event.EventListener;
 
 import javax.annotation.PostConstruct;
@@ -23,6 +24,7 @@ abstract public class StatedBean {
 
     abstract public void onPostConstruct();
     abstract public void onContextRefresh();
+    abstract public void onContextStarted();
 
     @PostConstruct
     public void init(){
@@ -34,6 +36,12 @@ abstract public class StatedBean {
     public void handleContextRefresh(ContextRefreshedEvent event) {
         state = BeanState.AFTER_CONTEXT_REFRESHED;
         onContextRefresh();
+    }
+
+    @EventListener
+    public void handleContextRefresh(ContextStartedEvent event) {
+        state = BeanState.AFTER_CONTEXT_STARTED;
+        onContextStarted();
     }
 
     public BeanState getState() {

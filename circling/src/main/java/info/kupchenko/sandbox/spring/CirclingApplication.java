@@ -3,6 +3,8 @@ package info.kupchenko.sandbox.spring;
 import info.kupchenko.sandbox.spring.circling.Config;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
+import java.util.Arrays;
+
 /**
  * The CirclingApplication ...
  *
@@ -15,5 +17,8 @@ public class CirclingApplication {
 
     public static void main(String[] args) {
         AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(Config.class);
+        // generate ContextStartedEvent
+        context.start();
+        System.out.println("CirclingApplication is started");
     }
 }

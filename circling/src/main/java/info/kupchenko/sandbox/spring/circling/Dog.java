@@ -35,6 +35,11 @@ public class Dog extends StatedBean implements Pet {
     }
 
     @Override
+    public void onContextStarted() {
+        System.out.println(this);
+    }
+
+    @Override
     public String name() {
         return name;
     }

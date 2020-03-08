@@ -46,6 +46,16 @@ public class Mary extends StatedBean implements Wife {
     }
 
     @Override
+    public void onContextStarted() {
+        System.out.println(this);
+        try {
+            rest();
+        } catch (InterruptedException e) {
+            System.out.println(name + "interrupted");
+        }
+    }
+
+    @Override
     public String name() {
         return name;
     }
@@ -55,8 +65,8 @@ public class Mary extends StatedBean implements Wife {
         System.out.println(String.format("%s takes a rest", name));
         Thread.sleep(ThreadLocalRandom.current().nextLong(DEFAULT_MAX_DELAY));
         System.out.println(String.format("%s: %s, give me please some money...", name, husband.name()));
-        long amount = husband.getMoney();
-        System.out.println(String.format("%s: Hmm, only %d $ ...", name, amount));
+        long amount = husband.getMoney(this);
+        System.out.println(String.format("%s: Hmm, only %d$ ...", name, amount));
     }
 
     @Override
