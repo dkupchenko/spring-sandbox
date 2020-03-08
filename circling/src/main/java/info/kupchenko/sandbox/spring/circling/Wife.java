@@ -8,5 +8,6 @@ package info.kupchenko.sandbox.spring.circling;
  * Created on 08.03.2020
  * Last review on 08.03.2020
  */
-public interface Wife {
+public interface Wife extends Essence {
+    void smile() throws InterruptedException;
 }

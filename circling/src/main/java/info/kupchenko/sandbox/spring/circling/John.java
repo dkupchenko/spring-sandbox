@@ -3,6 +3,8 @@ package info.kupchenko.sandbox.spring.circling;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.concurrent.ThreadLocalRandom;
+
 /**
  * The Husband ...
  *
@@ -14,10 +16,13 @@ import org.springframework.stereotype.Component;
 @Component
 @SuppressWarnings("unused")
 public class John extends StatedBean implements Husband {
+    private static final long MAX_AMOUNT = 1000L;
     String name;
     Pet pet;
     @Autowired
     Car car;
+    @Autowired
+    Wife wife;
 
     public John(Pet pet) {
         super();
@@ -25,17 +30,25 @@ public class John extends StatedBean implements Husband {
         name = "Husband";
         System.out.println(toString());
         pet.stroke(this);
-        // NullPointerException
-        // car.move(this);
+        System.out.println(String.format("John looks on car: %s", car));
+        System.out.println(String.format("John looks on wife: %s", wife));
     }
-
 
     @Override
     public void onPostConstruct() {
         name = "John";
         System.out.println(toString());
         pet.stroke(this);
-        car.move(this);
+        car.check(this);
+        System.out.println(String.format("John looks on wife: %s", wife));
+    }
+
+    @Override
+    public void onContextRefresh() {
+        System.out.println(toString());
+        pet.stroke(this);
+        car.check(this);
+        System.out.println(String.format("%s: Hi, %s", name,  wife.name()));
     }
 
     @Override
@@ -44,20 +57,19 @@ public class John extends StatedBean implements Husband {
     }
 
     @Override
-    public void onContextRefresh() {
-        System.out.println(toString());
-        pet.stroke(this);
+    public void rest() throws InterruptedException {
+        System.out.println(String.format("%s takes a rest", name));
+        Thread.sleep(ThreadLocalRandom.current().nextLong(DEFAULT_MAX_DELAY));
+        pet.play(this);
         car.move(this);
     }
 
     @Override
-    public void rest() {
-
-    }
-
-    @Override
-    public void plan() {
-
+    public long getMoney() throws InterruptedException {
+        Thread.sleep(ThreadLocalRandom.current().nextLong(DEFAULT_MAX_DELAY));
+        long amount = ThreadLocalRandom.current().nextLong(MAX_AMOUNT);
+        System.out.println(String.format("%s gives %d $", name, amount));
+        return amount;
     }
 
     @Override

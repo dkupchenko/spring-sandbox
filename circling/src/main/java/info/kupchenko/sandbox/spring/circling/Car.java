@@ -11,5 +11,6 @@ package info.kupchenko.sandbox.spring.circling;
 public interface Car {
     String model();
     long price();
-    void move(Essence sender);
+    void check(Essence sender);
+    void move(Essence sender) throws InterruptedException;
 }

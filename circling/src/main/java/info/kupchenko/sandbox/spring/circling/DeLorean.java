@@ -2,6 +2,8 @@ package info.kupchenko.sandbox.spring.circling;
 
 import org.springframework.stereotype.Component;
 
+import java.util.concurrent.ThreadLocalRandom;
+
 /**
  * The DeLorean ...
  *
@@ -44,8 +46,14 @@ public class DeLorean extends StatedBean implements Car {
     }
 
     @Override
-    public void move(Essence sender) {
+    public void check(Essence sender) {
+        System.out.println(String.format("'%s' checks '%s'", sender.name(), model));
+    }
+
+    @Override
+    public void move(Essence sender) throws InterruptedException {
         System.out.println(String.format("'%s' takes a trip by '%s'", sender.name(), model));
+        Thread.sleep(ThreadLocalRandom.current().nextLong(DEFAULT_MAX_DELAY));
     }
 
     @Override

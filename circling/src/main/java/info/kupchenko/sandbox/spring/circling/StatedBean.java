@@ -14,6 +14,7 @@ import javax.annotation.PostConstruct;
  * Last review on 08.03.2020
  */
 abstract public class StatedBean {
+    protected final long DEFAULT_MAX_DELAY = 500L;
     protected BeanState state = BeanState.BEFORE_CONSTRUCT;
 
     public StatedBean() {

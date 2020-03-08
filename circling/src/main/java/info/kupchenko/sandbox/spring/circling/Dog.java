@@ -51,9 +51,8 @@ public class Dog extends StatedBean implements Pet {
 
     @Override
     public void play(Essence sender) throws InterruptedException {
-        long waitTime = ThreadLocalRandom.current().nextLong(500L);
-        System.out.println(sender.name() + " is playing with " + name + " for a " + waitTime + " ms");
-        Thread.sleep(waitTime);
+        System.out.println(sender.name() + " is playing with " + name);
+        Thread.sleep(ThreadLocalRandom.current().nextLong(DEFAULT_MAX_DELAY));
     }
 
     @Override

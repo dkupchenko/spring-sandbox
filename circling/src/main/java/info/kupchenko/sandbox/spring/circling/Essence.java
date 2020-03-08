@@ -10,5 +10,5 @@ package info.kupchenko.sandbox.spring.circling;
  */
 public interface Essence {
     String name();
-    void rest();
+    void rest() throws InterruptedException;
 }
