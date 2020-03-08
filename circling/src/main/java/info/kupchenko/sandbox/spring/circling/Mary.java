@@ -1,6 +1,5 @@
 package info.kupchenko.sandbox.spring.circling;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.concurrent.ThreadLocalRandom;
@@ -18,7 +17,6 @@ import java.util.concurrent.ThreadLocalRandom;
 public class Mary extends StatedBean implements Wife {
     String name;
     Pet pet;
-    @Autowired
     Husband husband;
 
     Mary(Pet pet) {
@@ -39,23 +37,6 @@ public class Mary extends StatedBean implements Wife {
     }
 
     @Override
-    public void onContextRefresh() {
-        System.out.println(toString());
-        pet.stroke(this);
-        System.out.println(String.format("%s: Hi, %s", name,  husband.name()));
-    }
-
-    @Override
-    public void onContextStarted() {
-        System.out.println(this);
-        try {
-            rest();
-        } catch (InterruptedException e) {
-            System.out.println(name + "interrupted");
-        }
-    }
-
-    @Override
     public String name() {
         return name;
     }
@@ -73,6 +54,11 @@ public class Mary extends StatedBean implements Wife {
     public void smile() throws InterruptedException {
         Thread.sleep(ThreadLocalRandom.current().nextLong(DEFAULT_MAX_DELAY));
         System.out.println(String.format("%s smiles", name));
+    }
+
+    @Override
+    public void setHusband(Husband husband) {
+        this.husband = husband;
     }
 
     @Override

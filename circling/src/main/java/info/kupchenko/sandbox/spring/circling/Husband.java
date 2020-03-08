@@ -11,4 +11,5 @@ package info.kupchenko.sandbox.spring.circling;
 public interface Husband extends Essence {
     long getMoney(Essence sender) throws InterruptedException;
     void asyncMethod() throws InterruptedException;
+    void setWife(Wife wife);
 }

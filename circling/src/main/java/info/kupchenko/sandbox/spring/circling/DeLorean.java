@@ -31,16 +31,6 @@ public class DeLorean extends StatedBean implements Car {
     }
 
     @Override
-    public void onContextRefresh() {
-        System.out.println(this);
-    }
-
-    @Override
-    public void onContextStarted() {
-        System.out.println(this);
-    }
-
-    @Override
     public String model() {
         return model;
     }

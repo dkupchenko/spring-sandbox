@@ -22,7 +22,6 @@ public class John extends StatedBean implements Husband {
     Pet pet;
     @Autowired
     Car car;
-    @Autowired
     Wife wife;
 
     public John(Pet pet) {
@@ -42,24 +41,6 @@ public class John extends StatedBean implements Husband {
         pet.stroke(this);
         car.check(this);
         System.out.println(String.format("John looks on wife: %s", wife));
-    }
-
-    @Override
-    public void onContextRefresh() {
-        System.out.println(toString());
-        pet.stroke(this);
-        car.check(this);
-        System.out.println(String.format("%s: Hi, %s", name,  wife.name()));
-    }
-
-    @Override
-    public void onContextStarted() {
-        System.out.println(this);
-        try {
-            rest();
-        } catch (InterruptedException e) {
-            System.out.println(name + "interrupted");
-        }
     }
 
     @Override
@@ -88,6 +69,11 @@ public class John extends StatedBean implements Husband {
     public void asyncMethod() throws InterruptedException {
         System.out.println("Hallow from new async method");
         Thread.sleep(ThreadLocalRandom.current().nextLong(DEFAULT_MAX_DELAY));
+    }
+
+    @Override
+    public void setWife(Wife wife) {
+        this.wife = wife;
     }
 
     @Override
