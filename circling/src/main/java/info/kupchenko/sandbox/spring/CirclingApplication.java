@@ -3,8 +3,6 @@ package info.kupchenko.sandbox.spring;
 import info.kupchenko.sandbox.spring.circling.Config;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
-import java.util.Arrays;
-
 /**
  * The CirclingApplication ...
  *

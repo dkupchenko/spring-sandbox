@@ -15,4 +15,11 @@
     <name>circling</name>
     <description>Sandbox with DI for circling dependencies</description>
 
+    <dependencies>
+        <dependency>
+            <groupId>org.springframework.integration</groupId>
+            <artifactId>spring-integration-core</artifactId>
+        </dependency>
+    </dependencies>
+
 </project>

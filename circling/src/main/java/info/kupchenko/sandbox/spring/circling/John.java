@@ -1,9 +1,9 @@
 package info.kupchenko.sandbox.spring.circling;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
-import java.nio.file.attribute.UserPrincipalNotFoundException;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
@@ -58,7 +58,7 @@ public class John extends StatedBean implements Husband {
         try {
             rest();
         } catch (InterruptedException e) {
-            System.out.println(name + "interrupted");;
+            System.out.println(name + "interrupted");
         }
     }
 
@@ -81,6 +81,13 @@ public class John extends StatedBean implements Husband {
         long amount = ThreadLocalRandom.current().nextLong(MAX_AMOUNT);
         System.out.println(String.format("%s gives %d$ to %s", name, amount, sender.name()));
         return amount;
+    }
+
+    @Async
+    @Override
+    public void asyncMethod() throws InterruptedException {
+        System.out.println("Hallow from new async method");
+        Thread.sleep(ThreadLocalRandom.current().nextLong(DEFAULT_MAX_DELAY));
     }
 
     @Override
