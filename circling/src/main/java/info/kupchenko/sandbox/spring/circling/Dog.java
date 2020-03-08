@@ -35,9 +35,18 @@ public class Dog extends StatedBean implements Pet {
     }
 
     @Override
-    public void rest() {
+    public void start() {}
 
+    @Override
+    public void stop() {}
+
+    @Override
+    public boolean isRunning() {
+        return false;
     }
+
+    @Override
+    public void rest() {}
 
     @Override
     public void stroke(Essence sender){
@@ -46,7 +55,7 @@ public class Dog extends StatedBean implements Pet {
 
     @Override
     public void play(Essence sender) throws InterruptedException {
-        System.out.println(sender.name() + " is playing with " + name);
+        System.out.println(String.format("[T-%d] %s is playing with %s", Thread.currentThread().getId(), sender.name(), name));
         Thread.sleep(ThreadLocalRandom.current().nextLong(DEFAULT_MAX_DELAY));
     }
 

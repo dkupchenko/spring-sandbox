@@ -1,5 +1,7 @@
 package info.kupchenko.sandbox.spring.circling;
 
+import java.util.concurrent.Future;
+
 /**
  * The Husband ...
  *
@@ -9,7 +11,6 @@ package info.kupchenko.sandbox.spring.circling;
  * Last review on 07.03.2020
  */
 public interface Husband extends Essence {
-    long getMoney(Essence sender) throws InterruptedException;
-    void asyncMethod() throws InterruptedException;
+    Future<Long> getMoney(Essence sender) throws InterruptedException;
     void setWife(Wife wife);
 }

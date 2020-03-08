@@ -47,7 +47,7 @@ public class DeLorean extends StatedBean implements Car {
 
     @Override
     public void move(Essence sender) throws InterruptedException {
-        System.out.println(String.format("'%s' takes a trip by '%s'", sender.name(), model));
+        System.out.println(String.format("[T-%d] %s takes a trip by %s", Thread.currentThread().getId(), sender.name(), model));
         Thread.sleep(ThreadLocalRandom.current().nextLong(DEFAULT_MAX_DELAY));
     }
 

@@ -13,10 +13,16 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
  */
 public class CirclingApplication {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InterruptedException {
+        System.out.println(String.format("[T=%d] ------------ CirclingApplication creates a context -------------",
+                Thread.currentThread().getId()));
         AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(Config.class);
-        // generate ContextStartedEvent
+        System.out.println(String.format("[T=%d] ---------------- CirclingApplication is started ----------------",
+                Thread.currentThread().getId()));
         context.start();
-        System.out.println("CirclingApplication is started");
+        Thread.sleep(5000L);
+        context.stop();
+        System.out.println(String.format("[T-%d] ---------------- CirclingApplication is stopped ----------------",
+                Thread.currentThread().getId()));
     }
 }

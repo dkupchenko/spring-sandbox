@@ -1,7 +1,9 @@
 package info.kupchenko.sandbox.spring.circling;
 
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
@@ -16,6 +18,7 @@ import java.util.concurrent.ThreadLocalRandom;
 @SuppressWarnings("unused")
 public class Mary extends StatedBean implements Wife {
     String name;
+    Thread foregroundThread;
     Pet pet;
     Husband husband;
 
@@ -41,19 +44,56 @@ public class Mary extends StatedBean implements Wife {
         return name;
     }
 
+    @Async
     @Override
-    public void rest() throws InterruptedException {
-        System.out.println(String.format("%s takes a rest", name));
-        Thread.sleep(ThreadLocalRandom.current().nextLong(DEFAULT_MAX_DELAY));
-        System.out.println(String.format("%s: %s, give me please some money...", name, husband.name()));
-        long amount = husband.getMoney(this);
-        System.out.println(String.format("%s: Hmm, only %d$ ...", name, amount));
+    public void start() {
+        try {
+            if(isRunning()) return;
+            System.out.println(String.format("[T-%d] %s IS STARTED", Thread.currentThread().getId(), name));
+            System.out.println(String.format("[T-%d] %s: Hi, %s...", Thread.currentThread().getId(), name, husband.name()));
+            foregroundThread = Thread.currentThread();
+            while (!Thread.interrupted()) {
+                System.out.println(String.format("[T-%d] %s wants to take rest", Thread.currentThread().getId(), name));
+                rest();
+                Thread.sleep(ThreadLocalRandom.current().nextLong(DEFAULT_MAX_DELAY));
+            }
+        } catch (InterruptedException e) {
+            System.out.println(String.format("[T-%d] %s IS INTERRUPTED", Thread.currentThread().getId(), name));
+        }
     }
 
     @Override
+    public void stop() {
+        if(!isRunning()) return;
+        System.out.println(String.format("[T-%d] %s IS STOPPED", Thread.currentThread().getId(), name));
+        foregroundThread.interrupt();
+        foregroundThread = null;
+    }
+
+    @Override
+    public boolean isRunning() {
+        return (foregroundThread != null);
+    }
+
+    @Async
+    @Override
+    public void rest() throws InterruptedException {
+        try {
+            System.out.println(String.format("[T-%d] %s takes a rest", Thread.currentThread().getId(), name));
+            Thread.sleep(ThreadLocalRandom.current().nextLong(DEFAULT_MAX_DELAY));
+            System.out.println(String.format("[T-%d] %s: %s, give me please some money...", Thread.currentThread().getId(), name, husband.name()));
+            long amount = husband.getMoney(this).get();
+            System.out.println(String.format("[T-%d] %s: Hmm, only %d$ ...", Thread.currentThread().getId(), name, amount));
+        } catch (ExecutionException e) {
+            Thread.currentThread().interrupt();
+        }
+    }
+
+    @Async
+    @Override
     public void smile() throws InterruptedException {
+        System.out.println(String.format("[T-%d] %s smiles", Thread.currentThread().getId(), name));
         Thread.sleep(ThreadLocalRandom.current().nextLong(DEFAULT_MAX_DELAY));
-        System.out.println(String.format("%s smiles", name));
     }
 
     @Override
