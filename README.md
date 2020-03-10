@@ -1,2 +1,8 @@
 # spring-sandbox
-Sandbox for different Spring features
+
+## circling
+
+Проект [curcling](circling/README.md) показывает возможность использования циклических зависимостей 
+в worker сервисах (не event-driven). Отражены стадии инициализации бинов и работа с @Async.
+
+Можно пробежаться по коммитам ветки circling и посмотреть этапы реализации.   
