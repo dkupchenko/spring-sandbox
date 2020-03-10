@@ -3,6 +3,8 @@ package info.kupchenko.sandbox.spring;
 import info.kupchenko.sandbox.spring.circling.Config;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
+import java.util.Arrays;
+
 /**
  * The CirclingApplication ...
  *
@@ -13,16 +15,17 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
  */
 public class CirclingApplication {
 
-    public static void main(String[] args) throws InterruptedException {
-        System.out.println(String.format("[T=%d] ------------ CirclingApplication creates a context -------------",
-                Thread.currentThread().getId()));
+    public static void main(String[] args) {
         AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(Config.class);
-        System.out.println(String.format("[T=%d] ---------------- CirclingApplication is started ----------------",
-                Thread.currentThread().getId()));
         context.start();
-        Thread.sleep(5000L);
+        while(!Thread.interrupted()) {
+            try {
+                Thread.sleep(500L);
+            } catch (InterruptedException e) {
+                System.out.println("CirclingApplication is interrupted");
+                break;
+            }
+        }
         context.stop();
-        System.out.println(String.format("[T-%d] ---------------- CirclingApplication is stopped ----------------",
-                Thread.currentThread().getId()));
     }
 }
