@@ -1,6 +1,4 @@
-package info.kupchenko.sandbox.spring.circling;
-
-import org.springframework.stereotype.Component;
+package info.kupchenko.sandbox.spring.circling.family;
 
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -12,28 +10,17 @@ import java.util.concurrent.ThreadLocalRandom;
  * Created on 06.03.2020
  * Last review on 06.03.2020
  */
-@Component
-@SuppressWarnings("unused")
-public class Dog extends StatedBean implements Pet {
+public class Dog implements Pet {
+    private static final long DOG_DEFAULT_MAX_DELAY = 500;
+
     String name;
 
     public Dog() {
-        super();
-        name = "Dog";
-        System.out.println(toString());
-    }
-
-    @Override
-    public void onPostConstruct() {
         name = "Rocky";
-        System.out.println(toString());
+        System.out.println(this);
     }
 
-    @Override
-    public String name() {
-        return name;
-    }
-
+    // LifeCycle interface implementation
     @Override
     public void start() {}
 
@@ -45,9 +32,16 @@ public class Dog extends StatedBean implements Pet {
         return false;
     }
 
+    // Essence interface implementation
+    @Override
+    public String name() {
+        return name;
+    }
+
     @Override
     public void rest() {}
 
+    // Pet interface implementation
     @Override
     public void stroke(Essence sender){
         System.out.println(String.format("'%s' strokes the '%s'", sender.name(), name));
@@ -56,11 +50,11 @@ public class Dog extends StatedBean implements Pet {
     @Override
     public void play(Essence sender) throws InterruptedException {
         System.out.println(String.format("[T-%d] %s is playing with %s", Thread.currentThread().getId(), sender.name(), name));
-        Thread.sleep(ThreadLocalRandom.current().nextLong(DEFAULT_MAX_DELAY));
+        Thread.sleep(ThreadLocalRandom.current().nextLong(DOG_DEFAULT_MAX_DELAY));
     }
 
     @Override
     public String toString() {
-        return String.format("%s with name '%s', %s", this.getClass().getSimpleName(), name, super.toString());
+        return String.format("%s with name '%s'", this.getClass().getSimpleName(), name);
     }
 }

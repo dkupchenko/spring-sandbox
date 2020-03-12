@@ -1,6 +1,4 @@
-package info.kupchenko.sandbox.spring.circling;
-
-import org.springframework.stereotype.Component;
+package info.kupchenko.sandbox.spring.circling.family;
 
 /**
  * The SmithFamily ...
@@ -10,8 +8,6 @@ import org.springframework.stereotype.Component;
  * Created on 08.03.2020
  * Last review on 08.03.2020
  */
-@Component
-@SuppressWarnings("unused")
 public class SmithFamily implements Family {
     SmithFamily(Husband husband, Wife wife) {
         super();

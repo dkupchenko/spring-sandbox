@@ -1,4 +1,4 @@
-package info.kupchenko.sandbox.spring.circling;
+package info.kupchenko.sandbox.spring.circling.family;
 
 /**
  * The Family ...
