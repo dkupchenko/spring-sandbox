@@ -1,6 +1,7 @@
 package info.kupchenko.sandbox.spring.circling.family;
 
 import org.springframework.scheduling.annotation.Async;
+import org.springframework.stereotype.Service;
 
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ThreadLocalRandom;
@@ -13,6 +14,8 @@ import java.util.concurrent.ThreadLocalRandom;
  * Created on 08.03.2020
  * Last review on 08.03.2020
  */
+@Service
+@SuppressWarnings("unused")
 public class Mary implements Wife {
     private static final long MARY_DEFAULT_MAX_DELAY = 500;
     String name;
@@ -21,7 +24,6 @@ public class Mary implements Wife {
     Husband husband;
 
     Mary(Pet pet) {
-        super();
         this.pet = pet;
         name = "Mary";
         System.out.println(this);

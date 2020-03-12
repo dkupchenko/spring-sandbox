@@ -1,6 +1,8 @@
 package info.kupchenko.sandbox.spring.circling.family;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
+import org.springframework.stereotype.Service;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
@@ -14,12 +16,17 @@ import java.util.concurrent.ThreadLocalRandom;
  * Created on 06.03.2020
  * Last review on 06.03.2020
  */
+@Service
+@SuppressWarnings("unused")
 public class John implements Husband {
     private static final long JOHN_DEFAULT_MAX_DELAY = 500;
     private static final long MAX_AMOUNT = 1000L;
+
     Thread foregroundThread;
     String name;
+
     Pet pet;
+    @Autowired
     Car car;
     Wife wife;
 
@@ -93,12 +100,6 @@ public class John implements Husband {
     @Override
     public void setWife(Wife wife) {
         this.wife = wife;
-    }
-
-    // property DI
-    @SuppressWarnings("unused")
-    public void setCar(Car car) {
-        this.car = car;
     }
 
     @Override
