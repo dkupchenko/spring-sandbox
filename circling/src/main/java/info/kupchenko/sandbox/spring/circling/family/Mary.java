@@ -1,7 +1,6 @@
-package info.kupchenko.sandbox.spring.circling;
+package info.kupchenko.sandbox.spring.circling.family;
 
 import org.springframework.scheduling.annotation.Async;
-import org.springframework.stereotype.Service;
 
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ThreadLocalRandom;
@@ -14,9 +13,8 @@ import java.util.concurrent.ThreadLocalRandom;
  * Created on 08.03.2020
  * Last review on 08.03.2020
  */
-@Service
-@SuppressWarnings("unused")
-public class Mary extends StatedBean implements Wife {
+public class Mary implements Wife {
+    private static final long MARY_DEFAULT_MAX_DELAY = 500;
     String name;
     Thread foregroundThread;
     Pet pet;
@@ -25,25 +23,13 @@ public class Mary extends StatedBean implements Wife {
     Mary(Pet pet) {
         super();
         this.pet = pet;
-        name = "Wife";
-        System.out.println(toString());
-        pet.stroke(this);
-        System.out.println(String.format("Mary looks on husband: %s", husband));
-    }
-
-    @Override
-    public void onPostConstruct() {
         name = "Mary";
-        System.out.println(toString());
+        System.out.println(this);
         pet.stroke(this);
         System.out.println(String.format("Mary looks on husband: %s", husband));
     }
 
-    @Override
-    public String name() {
-        return name;
-    }
-
+    // LifeCycle interface implementation
     @Async
     @Override
     public void start() {
@@ -55,7 +41,7 @@ public class Mary extends StatedBean implements Wife {
             while (!Thread.interrupted()) {
                 System.out.println(String.format("[T-%d] %s wants to take rest", Thread.currentThread().getId(), name));
                 rest();
-                Thread.sleep(ThreadLocalRandom.current().nextLong(DEFAULT_MAX_DELAY));
+                Thread.sleep(ThreadLocalRandom.current().nextLong(MARY_DEFAULT_MAX_DELAY));
             }
         } catch (InterruptedException e) {
             System.out.println(String.format("[T-%d] %s IS INTERRUPTED", Thread.currentThread().getId(), name));
@@ -75,12 +61,18 @@ public class Mary extends StatedBean implements Wife {
         return (foregroundThread != null);
     }
 
+    // Essence interface implementation
+    @Override
+    public String name() {
+        return name;
+    }
+
     @Async
     @Override
     public void rest() throws InterruptedException {
         try {
             System.out.println(String.format("[T-%d] %s takes a rest", Thread.currentThread().getId(), name));
-            Thread.sleep(ThreadLocalRandom.current().nextLong(DEFAULT_MAX_DELAY));
+            Thread.sleep(ThreadLocalRandom.current().nextLong(MARY_DEFAULT_MAX_DELAY));
             System.out.println(String.format("[T-%d] %s: %s, give me please some money...", Thread.currentThread().getId(), name, husband.name()));
             long amount = husband.getMoney(this).get();
             System.out.println(String.format("[T-%d] %s: Hmm, only %d$ ...", Thread.currentThread().getId(), name, amount));
@@ -89,11 +81,12 @@ public class Mary extends StatedBean implements Wife {
         }
     }
 
+    // Wife interface implementation
     @Async
     @Override
     public void smile() throws InterruptedException {
         System.out.println(String.format("[T-%d] %s smiles", Thread.currentThread().getId(), name));
-        Thread.sleep(ThreadLocalRandom.current().nextLong(DEFAULT_MAX_DELAY));
+        Thread.sleep(ThreadLocalRandom.current().nextLong(MARY_DEFAULT_MAX_DELAY));
     }
 
     @Override
@@ -103,6 +96,6 @@ public class Mary extends StatedBean implements Wife {
 
     @Override
     public String toString() {
-        return String.format("Wife with name '%s', %s", name, super.toString());
+        return String.format("Wife with name '%s'", name);
     }
 }

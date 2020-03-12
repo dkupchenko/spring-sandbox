@@ -1,9 +1,7 @@
-package info.kupchenko.sandbox.spring;
+package info.kupchenko.sandbox.spring.circling;
 
-import info.kupchenko.sandbox.spring.circling.Config;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-
-import java.util.Arrays;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.scheduling.annotation.EnableAsync;
 
 /**
  * The CirclingApplication ...
@@ -13,10 +11,12 @@ import java.util.Arrays;
  * Created on 06.03.2020
  * Last review on 06.03.2020
  */
+@EnableAsync
 public class CirclingApplication {
 
     public static void main(String[] args) {
-        AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(Config.class);
+        ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext(
+                "spring-context.xml");
         context.start();
         while(!Thread.interrupted()) {
             try {

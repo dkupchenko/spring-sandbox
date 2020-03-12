@@ -1,6 +1,4 @@
-package info.kupchenko.sandbox.spring.circling;
-
-import org.springframework.stereotype.Component;
+package info.kupchenko.sandbox.spring.circling.family;
 
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -12,24 +10,17 @@ import java.util.concurrent.ThreadLocalRandom;
  * Created on 08.03.2020
  * Last review on 08.03.2020
  */
-@Component
-@SuppressWarnings("unused")
-public class DeLorean extends StatedBean implements Car {
+public class DeLorean implements Car {
+    private static final long CAR_DEFAULT_MAX_DELAY = 500;
     String model;
     long price = 50000;
 
     DeLorean() {
-        super();
-        model = "DeLorean";
-        System.out.println(this);
-    }
-
-    @Override
-    public void onPostConstruct() {
         model = "DeLorean DMC-12";
         System.out.println(this);
     }
 
+    // Car interface implementation
     @Override
     public String model() {
         return model;
@@ -48,11 +39,11 @@ public class DeLorean extends StatedBean implements Car {
     @Override
     public void move(Essence sender) throws InterruptedException {
         System.out.println(String.format("[T-%d] %s takes a trip by %s", Thread.currentThread().getId(), sender.name(), model));
-        Thread.sleep(ThreadLocalRandom.current().nextLong(DEFAULT_MAX_DELAY));
+        Thread.sleep(ThreadLocalRandom.current().nextLong(CAR_DEFAULT_MAX_DELAY));
     }
 
     @Override
     public String toString() {
-        return String.format("Car '%s' costs %d, %s", model, price, super.toString());
+        return String.format("Car '%s' costs %d", model, price);
     }
 }
