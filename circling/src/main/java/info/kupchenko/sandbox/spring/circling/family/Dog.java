@@ -1,5 +1,7 @@
 package info.kupchenko.sandbox.spring.circling.family;
 
+import org.springframework.stereotype.Component;
+
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
@@ -10,6 +12,8 @@ import java.util.concurrent.ThreadLocalRandom;
  * Created on 06.03.2020
  * Last review on 06.03.2020
  */
+@Component
+@SuppressWarnings("unused")
 public class Dog implements Pet {
     private static final long DOG_DEFAULT_MAX_DELAY = 500;
 

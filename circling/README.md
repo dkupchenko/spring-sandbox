@@ -53,3 +53,8 @@ John.onPostConstruct()).
 Все медленные методы помечены @Async. Управление worker-сервисами отдано на откуп Spring'у имплементацией интерфейса
  Lifecycle у всех Essence. В этом случае не нужно слушать event'ы ContextStartedEvent & ContextStoppedEvent, 
  нужно уметь реагировать на команды Lifecycle.
+ 
+### Stage 4. Mixed mode Spring configuration
+
+Смешанный вариант конфигурации контекста. [spring-context.xml](src/main/resources/spring-context.xml) ссылается на 
+конфигурацию через аннотации [Config.java](src/main/java/info/kupchenko/sandbox/spring/circling/Config.java).
