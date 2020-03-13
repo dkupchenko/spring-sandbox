@@ -54,7 +54,61 @@ John.onPostConstruct()).
  Lifecycle у всех Essence. В этом случае не нужно слушать event'ы ContextStartedEvent & ContextStoppedEvent, 
  нужно уметь реагировать на команды Lifecycle.
  
-### Stage 4. Mixed mode Spring configuration
+## Stage 4. Mixed mode Spring configuration
 
 Смешанный вариант конфигурации контекста. [spring-context.xml](src/main/resources/spring-context.xml) ссылается на 
 конфигурацию через аннотации [Config.java](src/main/java/info/kupchenko/sandbox/spring/circling/Config.java).
+
+## Stage 5. Конфигурируемый автостарт и SmartLifecycle 
+
+Далеко не во всех кейсах можно позволить себе вызовы context.start() и context.stop() из main(). Данный этап
+посвещён добавлению опции автостарта для worker-бинов. Реализация автостарта возложена на нативные реализации 
+Spring'а.
+
+Бин [SmithFamily](src/main/java/info/kupchenko/sandbox/spring/circling/family/SmithFamily.java) имплементирует
+интерфейс [SmartLifecycle](https://github.com/spring-projects/spring-framework/blob/master/spring-context/src/main/java/org/springframework/context/SmartLifecycle.java)
+и с помощью [SmartLifecycle.isAutoStartup()](https://docs.spring.io/spring/docs/current/javadoc-api/org/springframework/context/SmartLifecycle.html#isAutoStartup--)
+позволяет указать фреймворку, что данный бин должен запускаться сразу после создания контекста.   
+
+В то же время [DefaultLifecycleProcessor](https://docs.spring.io/spring/docs/current/javadoc-api/org/springframework/context/support/DefaultLifecycleProcessor.html),
+пробегая по всем бинам с интерфейсами `SmartLifecycle` при `onRefresh()` в поисках бинов с `isAutoStartup() -> true`, 
+стартует не только данные бины, но и все бины, от которых они зависят. То есть, можно просто просмотреть цепочку вызовов
+`onRefresh() -> startBeans(true) -> doStart()`, чтобы убедиться в этом. Более того, данное поведение - это часть контракта
+класса `DefaultLifecycleProcessor`
+```
+...
+/**
+ * Default implementation of the {@link LifecycleProcessor} strategy.
+ *
+ * @author Mark Fisher
+ * @author Juergen Hoeller
+ * @since 3.0
+ */
+public class DefaultLifecycleProcessor implements LifecycleProcessor, BeanFactoryAware {
+...
+/**
+ * Start the specified bean as part of the given set of Lifecycle beans,
+ * making sure that any beans that it depends on are started first.
+ * @param lifecycleBeans Map with bean name as key and Lifecycle instance as value
+ * @param beanName the name of the bean to start
+ */
+private void doStart(Map<String, ? extends Lifecycle> lifecycleBeans, String beanName) {
+...
+}
+```
+Таким образом, бин `SmithFamily`, зависящий от бинов `John` и `Mary` при автостарте косвенно, посредством фреймворка,
+будет "виновен" в автостарте бинов `John` и `Mary`. Если бы в проекте были еще worker-бины без циклических зависимостей, 
+для их автостарта можно было бы рассмотреть следующие вариатны:
+* имплементация интерфейса SmartLifecycle
+* создание зависимости от данного бина у другого бина, реализующего интерфейс SmartLifecycle 
+
+`SmartLifecycle` и `DefaultLifecycleProcessor` существуют как минимум с 09.12.2009 в описанной выше реализации.
+Можете убедиться, пробежавшись по коммитам Spring'а: 
+```
+git clone https://github.com/spring-projects/spring-framework.git
+git show dc1b500430
+git checkout dc1b500430
+cat spring-framework/org.springframework.context/src/main/java/org/springframework/context/support/DefaultLifecycleProcessor.java
+cat spring-framework/org.springframework.context/src/main/java/org/springframework/context/SmartLifecycle.java
+```
+
