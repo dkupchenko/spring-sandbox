@@ -1,6 +1,6 @@
 package info.kupchenko.sandbox.spring.circling.family;
 
-import org.springframework.context.SmartLifecycle;
+import org.springframework.context.Lifecycle;
 
 /**
  * The Family ...
@@ -10,5 +10,5 @@ import org.springframework.context.SmartLifecycle;
  * Created on 08.03.2020
  * Last review on 08.03.2020
  */
-public interface Family extends SmartLifecycle  {
+public interface Family extends Lifecycle {
 }

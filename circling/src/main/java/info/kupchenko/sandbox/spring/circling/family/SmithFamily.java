@@ -1,8 +1,7 @@
 package info.kupchenko.sandbox.spring.circling.family;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.task.TaskExecutor;
-import org.springframework.scheduling.concurrent.ExecutorConfigurationSupport;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Component;
 
 /**
@@ -16,37 +15,36 @@ import org.springframework.stereotype.Component;
 @Component
 @SuppressWarnings("unused")
 public class SmithFamily implements Family {
-    @Value("${family.auto-startup}")
-    boolean autoStartup = false;
-    boolean running = false;
-    Husband husband;
-    Wife wife;
-    TaskExecutor executor;
-    Thread familyThread;
+    ThreadPoolTaskExecutor executor;
+    boolean running;
 
     SmithFamily(Husband husband, Wife wife, TaskExecutor executor) {
+        running = false;
+        if(executor instanceof ThreadPoolTaskExecutor) {
+            this.executor = (ThreadPoolTaskExecutor) executor;
+        }
         husband.setWife(wife);
         wife.setHusband(husband);
-        this.executor = executor;
-        this.husband = husband;
-        this.wife = wife;
     }
 
     @Override
     public void start() {
-        familyThread = Thread.currentThread();
-        System.out.println(String.format("[T-%d] %s IS STARTED", Thread.currentThread().getId(), "SmithFamily"));
         running = true;
-        if(autoStartup)
-            Runtime.getRuntime().addShutdownHook(new Thread(new ShutdownHook()));
+        if(executor != null && executor.getThreadPoolExecutor().isShutdown()) {
+            executor.initialize();
+        }
+        System.out.println(String.format("[T-%d] %s IS STARTED",
+                Thread.currentThread().getId(), this.getClass().getSimpleName()));
     }
 
     @Override
     public void stop() {
-        System.out.println(String.format("[T-%d] %s IS STOPPED", Thread.currentThread().getId(), "SmithFamily"));
         running = false;
-        if(executor instanceof ExecutorConfigurationSupport)
-            ((ExecutorConfigurationSupport) executor).shutdown();
+        if(executor != null && !executor.getThreadPoolExecutor().isShutdown()) {
+            executor.shutdown();
+        }
+        System.out.println(String.format("[T-%d] %s IS STOPPED",
+                Thread.currentThread().getId(), this.getClass().getSimpleName()));
     }
 
     @Override
@@ -55,26 +53,7 @@ public class SmithFamily implements Family {
     }
 
     @Override
-    public boolean isAutoStartup() {
-        return autoStartup;
-    }
-
-    @Override
-    public int getPhase() {
-        return 0;
-    }
-
-    class ShutdownHook implements Runnable {
-        @Override
-        public void run() {
-            husband.stop();
-            wife.stop();
-            stop();
-        }
-    }
-
-    @Override
     public String toString() {
-        return String.format("SmithFamily with husband '%s' and wife %s", husband, wife);
+        return String.format("%s{running=%s}", this.getClass().getSimpleName(), running);
     }
 }
