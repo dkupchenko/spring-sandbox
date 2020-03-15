@@ -1,6 +1,6 @@
 package info.kupchenko.sandbox.spring.circling;
 
-import org.springframework.context.LifecycleProcessor;
+import info.kupchenko.summer.context.annotation.AutoStartupLifecycle;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -17,15 +17,10 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
  * Last review on 12.03.2020
  */
 @Configuration
+@AutoStartupLifecycle
 @EnableAsync
 @ComponentScan(basePackages = "info.kupchenko.sandbox.spring.circling")
 public class Config {
-    @Bean
-    @SuppressWarnings("unused")
-    public LifecycleProcessor lifecycleProcessor() {
-        return new AutoStartupLifecycleProcessor();
-    }
-
     @Bean
     @SuppressWarnings("unused")
     public TaskExecutor taskExecutor() {
