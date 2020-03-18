@@ -1,5 +1,7 @@
 package info.kupchenko.sandbox.spring.circling.family;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
@@ -17,6 +19,7 @@ import java.util.concurrent.ThreadLocalRandom;
 @Service
 @SuppressWarnings("unused")
 public class Mary implements Wife {
+    private static Log log = LogFactory.getLog(Mary.class);
     private static final long MARY_DEFAULT_MAX_DELAY = 500;
     String name;
     Thread foregroundThread;
@@ -26,9 +29,9 @@ public class Mary implements Wife {
     Mary(Pet pet) {
         this.pet = pet;
         name = "Mary";
-        System.out.println(this);
+        log.debug(this);
         pet.stroke(this);
-        System.out.println(String.format("Mary looks on husband: %s", husband));
+        log.debug(String.format("Mary looks on husband: %s", husband));
     }
 
     // LifeCycle interface implementation
@@ -37,23 +40,23 @@ public class Mary implements Wife {
     public void start() {
         try {
             if(isRunning()) return;
-            System.out.println(String.format("[T-%d] %s IS STARTED", Thread.currentThread().getId(), name));
-            System.out.println(String.format("[T-%d] %s: Hi, %s...", Thread.currentThread().getId(), name, husband.name()));
+            log.debug(String.format("%s IS STARTED", name));
+            log.info(String.format("%s: Hi, %s...", name, husband.name()));
             foregroundThread = Thread.currentThread();
             while (!Thread.interrupted()) {
-                System.out.println(String.format("[T-%d] %s wants to take rest", Thread.currentThread().getId(), name));
+                log.info(String.format("%s wants to take rest", name));
                 rest();
                 Thread.sleep(ThreadLocalRandom.current().nextLong(MARY_DEFAULT_MAX_DELAY));
             }
         } catch (InterruptedException e) {
-            System.out.println(String.format("[T-%d] %s IS INTERRUPTED", Thread.currentThread().getId(), name));
+            log.debug(String.format("%s IS INTERRUPTED", name));
         }
     }
 
     @Override
     public void stop() {
         if(!isRunning()) return;
-        System.out.println(String.format("[T-%d] %s IS STOPPED", Thread.currentThread().getId(), name));
+        log.debug(String.format("%s IS STOPPED", name));
         foregroundThread.interrupt();
         foregroundThread = null;
     }
@@ -73,11 +76,11 @@ public class Mary implements Wife {
     @Override
     public void rest() throws InterruptedException {
         try {
-            System.out.println(String.format("[T-%d] %s takes a rest", Thread.currentThread().getId(), name));
+            log.info(String.format("%s takes a rest", name));
             Thread.sleep(ThreadLocalRandom.current().nextLong(MARY_DEFAULT_MAX_DELAY));
-            System.out.println(String.format("[T-%d] %s: %s, give me please some money...", Thread.currentThread().getId(), name, husband.name()));
+            log.info(String.format("%s: %s, give me please some money...", name, husband.name()));
             long amount = husband.getMoney(this).get();
-            System.out.println(String.format("[T-%d] %s: Hmm, only %d$ ...", Thread.currentThread().getId(), name, amount));
+            log.info(String.format("%s: Hmm, only %d$ ...", name, amount));
         } catch (ExecutionException e) {
             Thread.currentThread().interrupt();
         }
@@ -87,7 +90,7 @@ public class Mary implements Wife {
     @Async
     @Override
     public void smile() throws InterruptedException {
-        System.out.println(String.format("[T-%d] %s smiles", Thread.currentThread().getId(), name));
+        log.info(String.format("%s smiles", name));
         Thread.sleep(ThreadLocalRandom.current().nextLong(MARY_DEFAULT_MAX_DELAY));
     }
 

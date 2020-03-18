@@ -17,20 +17,5 @@ public class CirclingApplication {
     public static void main(String[] args) {
         ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext(
                 "spring-context.xml");
-/*
-        context.start();
-        int counter = 0;
-        while(!Thread.interrupted() && counter < 10) {
-            try {
-                counter++;
-                Thread.sleep(500L);
-            } catch (InterruptedException e) {
-                System.out.println("CirclingApplication is interrupted");
-                break;
-            }
-        }
-        context.stop();
-
- */
     }
 }

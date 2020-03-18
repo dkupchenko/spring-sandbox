@@ -1,5 +1,7 @@
 package info.kupchenko.sandbox.spring.circling.family;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.stereotype.Component;
 
 import java.util.concurrent.ThreadLocalRandom;
@@ -15,13 +17,14 @@ import java.util.concurrent.ThreadLocalRandom;
 @Component
 @SuppressWarnings("unused")
 public class Dog implements Pet {
+    private static Log log = LogFactory.getLog(Dog.class);
     private static final long DOG_DEFAULT_MAX_DELAY = 500;
 
     String name;
 
     public Dog() {
         name = "Rocky";
-        System.out.println(this);
+        log.debug(this);
     }
 
     // LifeCycle interface implementation
@@ -48,12 +51,12 @@ public class Dog implements Pet {
     // Pet interface implementation
     @Override
     public void stroke(Essence sender){
-        System.out.println(String.format("'%s' strokes the '%s'", sender.name(), name));
+        log.info(String.format("%s strokes %s", sender.name(), name));
     }
 
     @Override
     public void play(Essence sender) throws InterruptedException {
-        System.out.println(String.format("[T-%d] %s is playing with %s", Thread.currentThread().getId(), sender.name(), name));
+        log.info(String.format("%s is playing with %s", sender.name(), name));
         Thread.sleep(ThreadLocalRandom.current().nextLong(DOG_DEFAULT_MAX_DELAY));
     }
 

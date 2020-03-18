@@ -1,5 +1,7 @@
 package info.kupchenko.sandbox.spring.circling.family;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Component;
@@ -15,6 +17,7 @@ import org.springframework.stereotype.Component;
 @Component
 @SuppressWarnings("unused")
 public class SmithFamily implements Family {
+    private static Log log = LogFactory.getLog(SmithFamily.class);
     ThreadPoolTaskExecutor executor;
     boolean running;
 
@@ -33,8 +36,7 @@ public class SmithFamily implements Family {
         if(executor != null && executor.getThreadPoolExecutor().isShutdown()) {
             executor.initialize();
         }
-        System.out.println(String.format("[T-%d] %s IS STARTED",
-                Thread.currentThread().getId(), this.getClass().getSimpleName()));
+        log.debug(String.format("%s IS STARTED", this.getClass().getSimpleName()));
     }
 
     @Override
@@ -43,8 +45,7 @@ public class SmithFamily implements Family {
         if(executor != null && !executor.getThreadPoolExecutor().isShutdown()) {
             executor.shutdown();
         }
-        System.out.println(String.format("[T-%d] %s IS STOPPED",
-                Thread.currentThread().getId(), this.getClass().getSimpleName()));
+        log.debug(String.format("%s IS STOPPED", this.getClass().getSimpleName()));
     }
 
     @Override
