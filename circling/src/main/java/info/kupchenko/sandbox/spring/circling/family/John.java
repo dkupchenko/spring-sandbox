@@ -1,5 +1,7 @@
 package info.kupchenko.sandbox.spring.circling.family;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -9,7 +11,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
- * The Husband ...
+ * The John ...
  *
  * @author by Dmitry Kupchenko
  * @version 1.0
@@ -19,6 +21,7 @@ import java.util.concurrent.ThreadLocalRandom;
 @Service
 @SuppressWarnings("unused")
 public class John implements Husband {
+    private static Log log = LogFactory.getLog(John.class);
     private static final long JOHN_DEFAULT_MAX_DELAY = 500;
     private static final long MAX_AMOUNT = 1000L;
 
@@ -33,10 +36,10 @@ public class John implements Husband {
     public John(Pet pet) {
         this.pet = pet;
         name = "John";
-        System.out.println(this);
+        log.debug(this);
         pet.stroke(this);
-        System.out.println(String.format("John looks on car: %s", car));
-        System.out.println(String.format("John looks on wife: %s", wife));
+        log.debug(String.format("%s looks on car: %s", name, car));
+        log.debug(String.format("%s looks on wife: %s", name, wife));
     }
 
     // LifeCycle interface implementation
@@ -45,23 +48,23 @@ public class John implements Husband {
     public void start() {
         try {
             if(isRunning()) return;
-            System.out.println(String.format("[T-%d] %s IS STARTED", Thread.currentThread().getId(), name));
-            System.out.println(String.format("[T-%d] %s: Hi, %s...", Thread.currentThread().getId(), name, wife.name()));
+            log.debug(String.format("%s IS STARTED", name));
+            log.info(String.format("%s: Hi, %s...", name, wife.name()));
             foregroundThread = Thread.currentThread();
             while(!Thread.interrupted()) {
-                System.out.println(String.format("[T-%d] %s wants to take rest", Thread.currentThread().getId(), name));
+                log.info(String.format("%s wants to take rest", name));
                 rest();
                 Thread.sleep(ThreadLocalRandom.current().nextLong(JOHN_DEFAULT_MAX_DELAY));
             }
         } catch (InterruptedException e) {
-            System.out.println(String.format("[T-%d] %s IS INTERRUPTED", Thread.currentThread().getId(), name));
+            log.debug(String.format("%s IS INTERRUPTED", name));
         }
     }
 
     @Override
     public void stop() {
         if(!isRunning()) return;
-        System.out.println(String.format("[T-%d] %s IS STOPPED", Thread.currentThread().getId(), name));
+        log.debug(String.format("%s IS STOPPED", name));
         foregroundThread.interrupt();
         foregroundThread = null;
     }
@@ -80,7 +83,7 @@ public class John implements Husband {
     @Async
     @Override
     public void rest() throws InterruptedException {
-        System.out.println(String.format("[T-%d] %s takes a rest", Thread.currentThread().getId(), name));
+        log.info(String.format("%s takes a rest", name));
         Thread.sleep(ThreadLocalRandom.current().nextLong(JOHN_DEFAULT_MAX_DELAY));
         pet.play(this);
         car.move(this);
@@ -92,7 +95,7 @@ public class John implements Husband {
     @Override
     public Future<Long> getMoney(Essence sender) throws InterruptedException {
         long amount = ThreadLocalRandom.current().nextLong(MAX_AMOUNT);
-        System.out.println(String.format("[T-%d] %s gives %d$ to %s", Thread.currentThread().getId(), name, amount, sender.name()));
+        log.info(String.format("%s gives %d$ to %s", name, amount, sender.name()));
         Thread.sleep(ThreadLocalRandom.current().nextLong(JOHN_DEFAULT_MAX_DELAY));
         return CompletableFuture.completedFuture(amount);
     }
@@ -104,6 +107,6 @@ public class John implements Husband {
 
     @Override
     public String toString() {
-        return String.format("Husband with name '%s'", name);
+        return String.format("%s with name '%s'", this.getClass().getSimpleName(), name);
     }
 }

@@ -1,5 +1,7 @@
 package info.kupchenko.sandbox.spring.circling.family;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.stereotype.Component;
 
 import java.util.concurrent.ThreadLocalRandom;
@@ -15,13 +17,14 @@ import java.util.concurrent.ThreadLocalRandom;
 @Component
 @SuppressWarnings("unused")
 public class DeLorean implements Car {
+    private static Log log = LogFactory.getLog(DeLorean.class);
     private static final long CAR_DEFAULT_MAX_DELAY = 500;
     String model;
     long price = 50000;
 
     DeLorean() {
         model = "DeLorean DMC-12";
-        System.out.println(this);
+        log.debug(this);
     }
 
     // Car interface implementation
@@ -37,12 +40,12 @@ public class DeLorean implements Car {
 
     @Override
     public void check(Essence sender) {
-        System.out.println(String.format("'%s' checks '%s'", sender.name(), model));
+        log.info(String.format("'%s' checks '%s'", sender.name(), model));
     }
 
     @Override
     public void move(Essence sender) throws InterruptedException {
-        System.out.println(String.format("[T-%d] %s takes a trip by %s", Thread.currentThread().getId(), sender.name(), model));
+        log.info(String.format("%s takes a trip by %s", sender.name(), model));
         Thread.sleep(ThreadLocalRandom.current().nextLong(CAR_DEFAULT_MAX_DELAY));
     }
 

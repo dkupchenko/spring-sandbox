@@ -25,8 +25,8 @@ public class Config {
     @SuppressWarnings("unused")
     public TaskExecutor taskExecutor() {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-        executor.setCorePoolSize(10);
-        executor.setMaxPoolSize(15);
+        executor.setCorePoolSize(7);
+        executor.setMaxPoolSize(9);
         executor.setQueueCapacity(25);
         executor.setWaitForTasksToCompleteOnShutdown(true);
         return executor;
