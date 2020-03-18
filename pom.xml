@@ -15,6 +15,7 @@
     <!-- sub modules -->
     <modules>
         <module>circling</module>
+        <module>scheduled-timezone</module>
     </modules>
 
     <properties>
