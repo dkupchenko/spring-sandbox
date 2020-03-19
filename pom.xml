@@ -25,6 +25,8 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <spring.version>5.2.3.RELEASE</spring.version>
         <spring.boot.maven.version>2.2.4.RELEASE</spring.boot.maven.version>
+        <summer.context.version>0.0.2-SNAPSHOT</summer.context.version>
+        <h2.version>1.4.200</h2.version>
         <log4j.version>2.13.1</log4j.version>
         <junit-jupiter.version>5.5.2</junit-jupiter.version>
         <mockito.version>3.1.0</mockito.version>
@@ -45,6 +47,20 @@
                 <artifactId>spring-integration-bom</artifactId>
                 <version>${spring.version}</version>
                 <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>info.kupchenko.summer</groupId>
+                <artifactId>context</artifactId>
+                <version>${summer.context.version}</version>
+            </dependency>
+
+            <!-- https://mvnrepository.com/artifact/com.h2database/h2 -->
+            <dependency>
+                <groupId>com.h2database</groupId>
+                <artifactId>h2</artifactId>
+                <version>${h2.version}</version>
             </dependency>
 
             <!-- https://mvnrepository.com/artifact/javax.annotation/javax.annotation-api -->
@@ -101,6 +117,18 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-context</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.integration</groupId>
+            <artifactId>spring-integration-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>info.kupchenko.summer</groupId>
+            <artifactId>context</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
         </dependency>
         <dependency>
             <groupId>javax.annotation</groupId>
