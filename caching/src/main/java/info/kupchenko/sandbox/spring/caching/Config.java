@@ -2,6 +2,9 @@ package info.kupchenko.sandbox.spring.caching;
 
 import info.kupchenko.sandbox.spring.caching.shop.*;
 import info.kupchenko.summer.context.annotation.AutoStartupLifecycle;
+import org.springframework.cache.CacheManager;
+import org.springframework.cache.annotation.EnableCaching;
+import org.springframework.cache.caffeine.CaffeineCacheManager;
 import org.springframework.context.annotation.*;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -26,6 +29,7 @@ import java.time.LocalDateTime;
 @AutoStartupLifecycle
 @EnableAsync
 @EnableScheduling
+@EnableCaching
 @ComponentScan(basePackages = "info.kupchenko.sandbox.spring.caching")
 public class Config {
     /**
@@ -64,6 +68,16 @@ public class Config {
     @SuppressWarnings("unused")
     public JdbcTemplate jdbcTemplate() {
         return new JdbcTemplate(dataSource());
+    }
+
+    /**
+     * Бин CaffeineCacheManager
+     * @return CacheManager
+     */
+    @Bean
+    @SuppressWarnings("unused")
+    public CacheManager cacheManager() {
+        return new CaffeineCacheManager("product");
     }
 
     /**
