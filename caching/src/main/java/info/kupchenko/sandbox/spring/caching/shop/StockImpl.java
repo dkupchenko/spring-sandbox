@@ -1,5 +1,6 @@
 package info.kupchenko.sandbox.spring.caching.shop;
 
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import java.sql.Timestamp;
@@ -38,6 +39,7 @@ abstract public class StockImpl implements Stock {
      * Возвращает ассортимент Тоаров в Магазине
      * @return список Товаров
      */
+    @Cacheable("product")
     @Override
     public List<Product> findAll() {
         return jdbcTemplate.query(
