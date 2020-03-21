@@ -6,7 +6,6 @@ import org.springframework.scheduling.annotation.Async;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.ThreadLocalRandom;
@@ -19,7 +18,7 @@ import java.util.concurrent.ThreadLocalRandom;
  * Created on 20.03.2020
  * Last review on 20.03.2020
  */
-public class BuyerImpl implements Buyer {
+abstract public class BuyerImpl implements Buyer {
     // для логгирования
     private static final Log log = LogFactory.getLog(BuyerImpl.class);
     // максимальная пауза между покупками
@@ -39,11 +38,11 @@ public class BuyerImpl implements Buyer {
     // количество для вычисления среднего
     private int countFindAll = 0;
     // объект-блокировка для фазы оформления списка покупок в Магазине
-    private final Object buyLock = new Object();
+    private final Object orderLock = new Object();
     // сумма для вычисления среднего
-    private long sumBuy = 0;
+    private long sumOrder = 0;
     // количество для вычисления среднего
-    private int countBuy = 0;
+    private int countOrder = 0;
 
     /**
      * Конструктор по умолчанию, получающий экземпляр Магазина и генерирующий уникальный id Покупателя
@@ -55,10 +54,19 @@ public class BuyerImpl implements Buyer {
     }
 
     /**
-     * Полезная нагрузка в виде получения ассортимента Магазина и оформления заказа из списка товаров
-     * @throws InterruptedException в случае загрытия приложения
+     * абстрактный метод, переопределяется в {@link info.kupchenko.sandbox.spring.caching.Config} для инжектирования
+     * экземпляров Заказов
+     * @param buyerId
+     * @param dt
+     * @return
      */
-    void doShopping() throws InterruptedException {
+    abstract public Order getOrder(long buyerId, LocalDateTime dt);
+
+    /**
+     * Полезная нагрузка в виде получения ассортимента Магазина и оформления заказа
+     */
+    void doShopping() {
+        Order order = getOrder(id, LocalDateTime.now());
         log.debug("Start shopping");
         // фаза получения ассортимента товаров
         LocalDateTime start = LocalDateTime.now();
@@ -69,19 +77,17 @@ public class BuyerImpl implements Buyer {
             sumFindAll = sumFindAll + ChronoUnit.NANOS.between(start, stop);
             countFindAll++;
         }
-        // генерация корзины заказа
-        int productsToBy = ThreadLocalRandom.current().nextInt(1, products.size());
-        List<Product> basket = new ArrayList<>();
-        for(int i = 0; i < productsToBy; i++)
-            basket.add((products.get(ThreadLocalRandom.current().nextInt(products.size()))));
+        // добавление Товаров в Заказ
+        for(int i = 0; i < ThreadLocalRandom.current().nextInt(1, products.size()); i++)
+            order.add((products.get(ThreadLocalRandom.current().nextInt(0, products.size() - 1))));
         // фаза оформления заказа на список покупок
         start = LocalDateTime.now();
-        shop.order(basket);
+        shop.order(order);
         stop = LocalDateTime.now();
         // обновление статистики по второй фазе
-        synchronized (buyLock) {
-            sumBuy = sumBuy + ChronoUnit.NANOS.between(start, stop)/basket.size();
-            countBuy++;
+        synchronized (orderLock) {
+            sumOrder = sumOrder + ChronoUnit.NANOS.between(start, stop)/order.getBasket().size();
+            countOrder++;
         }
         log.debug("Stop shopping");
     }
@@ -132,12 +138,12 @@ public class BuyerImpl implements Buyer {
      * @return интервал в наносекундах
      */
     @Override
-    public long getBuyProfiling() {
-        synchronized (buyLock) {
-            long sum = sumBuy;
-            long count = countBuy;
-            sumBuy = 0;
-            countBuy = 0;
+    public long getOrderProfiling() {
+        synchronized (orderLock) {
+            long sum = sumOrder;
+            long count = countOrder;
+            sumOrder = 0;
+            countOrder = 0;
             return sum / count;
         }
     }

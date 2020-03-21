@@ -3,7 +3,7 @@ package info.kupchenko.sandbox.spring.caching.shop;
 import java.util.List;
 
 /**
- * Интерфейс Shop описывает базовый функционал Магазина
+ * Интерфейс Shop описывает абстракцию Магазин
  *
  * @author by Dmitry Kupchenko
  * @version 1.0
@@ -12,16 +12,20 @@ import java.util.List;
  */
 public interface Shop {
     /**
-     * Возвращает ассортимент Тоаров в Магазине
+     * Возвращает Ассортимент Товаров в Магазине
      * @return список Товаров
-     * @throws InterruptedException в случае окончания работы приложения
      */
-    List<Product> findAll() throws InterruptedException;
+    List<Product> findAll();
 
     /**
-     * формирует заказ на покупку списка Товаров
-     * @param basket список Товаров в заказе
-     * @throws InterruptedException в случае окончания работы приложения
+     * обрабатывает Заказ Покупателя
+     * @param order экземпляр Заказа
      */
-    void order(List<Product> basket) throws InterruptedException;
+    void order(Order order);
+
+    /**
+     * Логгирование статистики по обработанным Заказам
+     */
+    @SuppressWarnings("unused")
+    void logOrders();
 }

@@ -2,14 +2,17 @@ package info.kupchenko.sandbox.spring.caching;
 
 import info.kupchenko.sandbox.spring.caching.shop.*;
 import info.kupchenko.summer.context.annotation.AutoStartupLifecycle;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.*;
 import org.springframework.core.task.TaskExecutor;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
+import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
+
+import javax.sql.DataSource;
+import java.time.LocalDateTime;
 
 /**
  * Класс Config является Java-аннотацией конфигурации контекста приложения
@@ -41,45 +44,87 @@ public class Config {
     }
 
     /**
-     * Бин Товара, описывается здесь для реализации DI в бине Магазина
-     * @return новый Товар
+     * Бин БД H2
+     * @return dataSource
      */
     @Bean
-    @Scope("prototype")
-    Product product() {
-        return new ProductImpl();
+    public DataSource dataSource() {
+        return new EmbeddedDatabaseBuilder()
+                .setType(EmbeddedDatabaseType.H2)
+                .setScriptEncoding("UTF-8")
+                .addScript("classpath:init_db.sql")
+                .build();
     }
 
     /**
-     * Бин Магазина, производит DI Товаров в Магазин
-     * @return синглтон Магазин
+     * Бин JdbcTemplate
+     * @return JdbcTemplate
      */
     @Bean
     @SuppressWarnings("unused")
-    Stock stock() {
-        return new StockImpl() {
+    public JdbcTemplate jdbcTemplate() {
+        return new JdbcTemplate(dataSource());
+    }
+
+    /**
+     * Бин Продукта для инжектирования в Ассортимент
+     * @param id идентификатор продукта
+     * @param price цена продукта
+     * @return экземпляр Продкута
+     */
+    @Bean
+    @Scope("prototype")
+    public Product product(long id, float price) {
+        return new ProductImpl(id, price);
+    }
+
+    /**
+     * Бин Ассортимента для инжектирования в него экземпляров Продукта
+     * @return ассортимент
+     */
+    @Bean
+    @SuppressWarnings("unused")
+    public Stock stock() {
+        return new StockImpl(jdbcTemplate()) {
             @Override
-            public Product getProduct() {
-                return product();
+            public Product getProduct(long id, float price) {
+                return product(id, price);
             }
         };
     }
 
     /**
-     * Бин Покупателя, описывается здесь для реализации DI в бине Фабрики Покупателей
-     * @param shop Бин Магазина, инжектируется Spring'ом
-     * @return новый Покупатель
+     * Бин Заказа для индектирования его в бин Покупателя
+     * @param buyerId идентификатор покупателя
+     * @param dt время заказа
+     * @return экземпляр Заказа
+     */
+    @Bean
+    @Scope("prototype")
+    public Order order(long buyerId, LocalDateTime dt) {
+        return new OrderImpl(buyerId, dt);
+    }
+
+    /**
+     * Бин Покупателя для инжектирования в бин Фабрики Покупателей
+     * @param shop Бин Магазина
+     * @return экземпляр Покупателя
      */
     @Bean
     @Scope("prototype")
     Buyer buyer(Shop shop) {
-        return new BuyerImpl(shop);
+        return new BuyerImpl(shop) {
+            @Override
+            public Order getOrder(long buyerId, LocalDateTime dt) {
+                return order(buyerId, dt);
+            }
+        };
     }
 
     /**
-     * Бин Фабрики Покупателей, производит DI Покупателей в Фабрику
-     * @param shop Бин Магазина, инжектируется Spring'ом
-     * @return синглтон Фабрика Покупателей
+     * Бин Фабрики Покупателей для инжектирования в него экземпляров Покупателей
+     * @param shop Бин Магазина
+     * @return экземпляр Фабрики Покупателей
      */
     @Bean
     @SuppressWarnings("unused")

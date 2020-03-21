@@ -1,11 +1,12 @@
 package info.kupchenko.sandbox.spring.caching.shop;
 
-import java.util.ArrayList;
+import org.springframework.jdbc.core.JdbcTemplate;
+
+import java.sql.Timestamp;
 import java.util.List;
-import java.util.concurrent.ThreadLocalRandom;
 
 /**
- * The StockImpl ...
+ * Класс StockImpl имплементирует абстракцию Ассортимент
  *
  * @author by Dmitry Kupchenko
  * @version 1.0
@@ -13,44 +14,66 @@ import java.util.concurrent.ThreadLocalRandom;
  * Last review on 21.03.2020
  */
 abstract public class StockImpl implements Stock {
-    // максимальная пауза при выполнении первой фазы
-    private static final long FIND_ALL_MAX_DELAY = 500;
-    // максимальная пауза при выполнении второй фазы
-    private static final long ORDER_MAX_DELAY = 200;
-    // количество товаров в ассортименте
-    private static final int PRODUCTS_COUNT = 50;
-    // ассортимент Товаров в Магазине
-    List<Product> products = new ArrayList<>();
+    // для работы с БД
+    private final JdbcTemplate jdbcTemplate;
 
     /**
-     * Конструктор по умолчанию, заполняет список товаров с помощью абстракного метода getProduct()
+     * DI over constructor бина JdbcTemplate
+     * @param jdbcTemplate бин JdbcTemplate
      */
-    public StockImpl() {
-        for(int i = 0; i < PRODUCTS_COUNT; i++)
-            products.add(getProduct());
+    public StockImpl(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
     }
 
     /**
-     * Возвращает ассортимент Тоаров в Магазине, иммитируя "длительность" процесса
+     * абстрактный метод;
+     * необходим для инжекции Товаров в Ассортимент (см. {@link info.kupchenko.sandbox.spring.caching.Config})
+     * @param id идентификатор Товара
+     * @param price цена Товара
+     * @return экземпляр Товара
+     */
+    abstract public Product getProduct(long id, float price);
+
+    /**
+     * Возвращает ассортимент Тоаров в Магазине
      * @return список Товаров
-     * @throws InterruptedException в случае окончания работы приложения
      */
     @Override
-    public List<Product> findAll() throws InterruptedException {
-        Thread.sleep(ThreadLocalRandom.current().nextLong(FIND_ALL_MAX_DELAY));
-        return products;
+    public List<Product> findAll() {
+        return jdbcTemplate.query(
+                "select id, price from products",
+                (resultSet, i) -> getProduct(resultSet.getLong("id"), resultSet.getFloat("price"))
+        );
     }
 
     /**
-     * обрабатывает заказ, иммитируя "длительность" процесса;
-     * данная реализация предполагает, что товары никогда не заканчиваются
-     * @param basket список Товаров в заказе
-     * @throws InterruptedException в случае окончания работы приложения
+     * сохраняет и обрабатывает заказы
+     * @param order Заказ
      */
     @Override
-    public void order(List<Product> basket) throws InterruptedException {
-        Thread.sleep(ThreadLocalRandom.current().nextLong(ORDER_MAX_DELAY * basket.size()));
+    public void order(Order order) {
+        if(order == null || order.getBasket().size() == 0) return;
+        List<Product> basket = order.getBasket();
+        jdbcTemplate.batchUpdate(
+                "insert into orders (dt, buyer_id, product_id, price) values (?, ?, ?, ?)",
+                basket,
+                basket.size(),
+                (ps, product) -> {
+                    ps.setTimestamp(1, Timestamp.valueOf(order.getDt()));
+                    ps.setLong(2, order.getBuyerId());
+                    ps.setLong(3, product.getId());
+                    ps.setFloat(4, product.getPrice());
+                }
+        );
     }
 
-    abstract public Product getProduct();
+    /**
+     * возвращает общее количество обработанных товаров
+     * @return количество строк в таблице orders
+     */
+    @Override
+    public long ordersCount() {
+        Long result = jdbcTemplate.queryForObject("select count(*) from orders", Long.class);
+        return (result != null) ? result : 0;
+    }
 }

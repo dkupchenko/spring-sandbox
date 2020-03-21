@@ -38,6 +38,12 @@ abstract public class BuyersSetImpl implements BuyersSet {
     }
 
     /**
+     * Перегрузка данного метода осуществляет инжекцию бинов (в {@link info.kupchenko.sandbox.spring.caching.Config})
+     * @return новый экземпляр покупателя
+     */
+    public abstract Buyer getBuyer();
+
+    /**
      * Старт при обновлении контекста осуществляется с помощью аннотации @AutoStartupLifecycle в Config
      */
     @Override
@@ -81,14 +87,8 @@ abstract public class BuyersSetImpl implements BuyersSet {
         long sumBuy = 0;
         for (Buyer buyer: buyers) {
             sumFindAll = sumFindAll + buyer.getFindAllProfiling();
-            sumBuy = sumBuy + buyer.getBuyProfiling();
+            sumBuy = sumBuy + buyer.getOrderProfiling();
         }
-        log.info(String.format("PROFILING: findAll = %d ns, buy = %d ns", sumFindAll / buyers.size(), sumBuy / buyers.size()));
+        log.info(String.format("PROFILING: findAll = %d ns, order = %d ns", sumFindAll / buyers.size(), sumBuy / buyers.size()));
     }
-
-    /**
-     * Перегрузка данного метода осуществляет инжекцию бинов (в {@link info.kupchenko.sandbox.spring.caching.Config})
-     * @return новый экземпляр покупателя
-     */
-    public abstract Buyer getBuyer();
 }

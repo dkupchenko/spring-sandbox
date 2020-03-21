@@ -1,5 +1,8 @@
 package info.kupchenko.sandbox.spring.caching.shop;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -13,34 +16,63 @@ import java.util.List;
  * Last review on 20.03.2020
  */
 @Service
+@SuppressWarnings("unused")
 public class ShopImpl implements Shop {
-    // ассортимент Товаров в Магазине
+    // для логгирования
+    private static final Log log = LogFactory.getLog(ShopImpl.class);
+    // лок для синхронизации изменения счётчиков статистики
+    private static final Object lock = new Object();
+    // обнуляемый счетчик Заказов
+    private long requests = 0;
+    // накапливаемый счётчик Заказов
+    private long allRequests = 0;
+    // Ассортимент Товаров в Магазине
     Stock stock;
 
     /**
-     * Инжекция ассортимента через конструктор
+     * Инжекция Ассортимента через конструктор
      */
     public ShopImpl(Stock stock) {
         this.stock = stock;
     }
 
     /**
-     * Возвращает ассортимент Тоаров в Магазине
+     * Возвращает Ассортимент Товаров в Магазине
      * @return список Товаров
-     * @throws InterruptedException в случае окончания работы приложения
      */
     @Override
-    public List<Product> findAll() throws InterruptedException {
+    public List<Product> findAll() {
         return stock.findAll();
     }
 
     /**
-     * формирует заказ на покупку списка Товаров
-     * @param basket список Товаров в заказе
-     * @throws InterruptedException в случае окончания работы приложения
+     * обрабатывает Заказ Покупателя
+     * @param order экземпляр Заказа
      */
     @Override
-    public void order(List<Product> basket) throws InterruptedException {
-        stock.order(basket);
+    public void order(Order order) {
+        synchronized (lock) {
+            requests++;
+            allRequests++;
+        }
+        stock.order(order);
+    }
+
+    /**
+     * Логгирование статистики по обработанным Заказам
+     */
+    @Scheduled(fixedRate = 10000, initialDelay = 10000)
+    @Override
+    public void logOrders() {
+        long tmpRequests;
+        long tmpAllRequests;
+        long tmpOrders;
+        synchronized (lock) {
+            tmpRequests = requests;
+            tmpAllRequests = allRequests;
+            tmpOrders = stock.ordersCount();
+            requests = 0;
+        }
+        log.info(String.format("ORDERS STATISTICS: orders_count = %d (all = %d), products_count = %d", tmpRequests, tmpAllRequests, tmpOrders));
     }
 }
