@@ -28,8 +28,8 @@ public interface Buyer {
     long getFindAllProfiling();
 
     /**
-     * Выдача статистики по профилированию этапа обработки списка покупок
+     * Выдача статистики по профилированию этапа обработки Заказа
      * @return интервал в наносекундах
      */
-    long getBuyProfiling();
+    long getOrderProfiling();
 }

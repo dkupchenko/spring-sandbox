@@ -3,8 +3,7 @@ package info.kupchenko.sandbox.spring.caching.shop;
 import java.util.Objects;
 
 /**
- * Класс ProductImpl является реализацией бина Товар;
- * содержит только уникальный идентификатор в данной реализации
+ * Класс ProductImpl является реализацией абстракции Товар
  *
  * @author by Dmitry Kupchenko
  * @version 1.0
@@ -12,16 +11,37 @@ import java.util.Objects;
  * Last review on 20.03.2020
  */
 public class ProductImpl implements Product {
-    // генератор уникального идентификатора
-    private static long counter = 0;
-    // идентификатор
-    private long id;
+    // идентификатор Товара
+    private final long id;
+    // цена Товара
+    private final float price;
 
     /**
-     * Конструктор по умолчанию, создаёт экземпляр с новым уникальным идентификатором
+     * All-args constructor
+     * @param id уникальный идентификатор Товара
+     * @param price цена товара
      */
-    public ProductImpl() {
-        id = counter++;
+    public ProductImpl(long id, float price) {
+        this.id = id;
+        this.price = price;
+    }
+
+    /**
+     * Возвращает идентификатор Товара
+     * @return идентификатор Товара
+     */
+    @Override
+    public long getId() {
+        return id;
+    }
+
+    /**
+     * Возвращает цену Товара
+     * @return цена Товара
+     */
+    @Override
+    public float getPrice() {
+        return price;
     }
 
     /**
@@ -48,10 +68,10 @@ public class ProductImpl implements Product {
 
     /**
      * Строковое представление класса
-     * @return стока вида "ProductImpl(123)"
+     * @return стока вида "%s{id=%d, price=%.2f}"
      */
     @Override
     public String toString() {
-        return String.format("%s(%d)", this.getClass().getSimpleName(), id);
+        return String.format("%s{id=%d, price=%.2f}", this.getClass().getSimpleName(), id, price);
     }
 }

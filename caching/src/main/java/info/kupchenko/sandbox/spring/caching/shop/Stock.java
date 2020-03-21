@@ -3,7 +3,7 @@ package info.kupchenko.sandbox.spring.caching.shop;
 import java.util.List;
 
 /**
- * Интерфейс Stock описывает функционал ассортимента Магазина
+ * Интерфейс Stock описывает абстракцию Ассортимента в Магазине
  *
  * @author by Dmitry Kupchenko
  * @version 1.0
@@ -14,15 +14,18 @@ public interface Stock {
     /**
      * Возвращает ассортимент Тоаров в Магазине
      * @return список Товаров
-     * @throws InterruptedException в случае окончания работы приложения
      */
-    List<Product> findAll() throws InterruptedException;
+    List<Product> findAll();
 
     /**
-     * корректирует остатки Товаров в Магазине
-     * @param basket список Товаров в заказе
-     * @throws InterruptedException в случае окончания работы приложения
+     * сохраняет и обрабатывает заказы
+     * @param order Заказ
      */
-    void order(List<Product> basket) throws InterruptedException;
+    void order(Order order);
 
+    /**
+     * возвращает общее количество обработанных товаров
+     * @return количество строк в таблице orders
+     */
+    long ordersCount();
 }

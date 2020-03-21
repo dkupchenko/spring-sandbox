@@ -52,6 +52,12 @@
             </dependency>
 
             <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-jdbc</artifactId>
+                <version>${spring.version}</version>
+            </dependency>
+
+            <dependency>
                 <groupId>info.kupchenko.summer</groupId>
                 <artifactId>context</artifactId>
                 <version>${summer.context.version}</version>
@@ -126,6 +132,10 @@
         <dependency>
             <groupId>info.kupchenko.summer</groupId>
             <artifactId>context</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-jdbc</artifactId>
         </dependency>
         <dependency>
             <groupId>com.h2database</groupId>
