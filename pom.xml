@@ -16,6 +16,7 @@
     <modules>
         <module>circling</module>
         <module>scheduled-timezone</module>
+        <module>caching</module>
     </modules>
 
     <properties>
