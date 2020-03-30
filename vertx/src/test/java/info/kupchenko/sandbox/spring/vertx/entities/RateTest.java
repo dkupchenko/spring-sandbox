@@ -17,10 +17,39 @@ import java.time.LocalDateTime;
 public class RateTest {
     /**
      * Проверка нормального создания котировки;
+     */
+    @Test
+    void normalAllArgsConstructor() {
+        Currency currency = Currency.USD;
+        LocalDateTime time = LocalDateTime.now();
+        float value = 55.5555f;
+        long millisDelta = 50;
+
+        // котрировки с value > 0
+        Rate rate = new Rate(currency, time, value);
+        Assertions.assertEquals(currency, rate.getCurrency());
+        Assertions.assertEquals(time, rate.getTime());
+        Assertions.assertEquals(value, rate.getValue());
+
+        // котрировки с value == 0
+        rate = new Rate(currency, time, 0);
+        Assertions.assertEquals(currency, rate.getCurrency());
+        Assertions.assertEquals(time, rate.getTime());
+        Assertions.assertEquals(0, rate.getValue());
+
+        // котрировки с value < 0
+        rate = new Rate(currency, time, -value);
+        Assertions.assertEquals(currency, rate.getCurrency());
+        Assertions.assertEquals(time, rate.getTime());
+        Assertions.assertEquals(-value, rate.getValue());
+    }
+
+    /**
+     * Проверка нормального создания котировки;
      * время котировки оценивается приблизительно (на создание экземпляра класса Rate отводится 50 мс)
      */
     @Test
-    void normalCreate() {
+    void normalPartialConstructor() {
         Currency currency = Currency.USD;
         float value = 55.5555f;
         long millisDelta = 50;
@@ -59,8 +88,15 @@ public class RateTest {
      * время котировки оценивается приблизительно: на создание экземпляра класса Rate отводится 50 мс
      */
     @Test
-    void createWithEmptyCurrency() {
+    void checkNullsInConstructors() {
+        Currency currency = Currency.USD;
+        LocalDateTime time = LocalDateTime.now();
         float value = 55.5555f;
+        // all-args constructor
+        Assertions.assertThrows(NullPointerException.class, () -> new Rate(null, null, value));
+        Assertions.assertThrows(NullPointerException.class, () -> new Rate(null, time, value));
+        Assertions.assertThrows(NullPointerException.class, () -> new Rate(currency, null, value));
+        // (Currency, float) constructor
         Assertions.assertThrows(NullPointerException.class, () -> new Rate(null, value));
     }
 
@@ -69,7 +105,7 @@ public class RateTest {
         Currency currency = Currency.USD;
         float value = 55.5555f;
         Rate rate = new Rate(currency, value);
-        Rate anotherRate = new Rate(currency, value);
+        Rate anotherRate = new Rate(currency, value + 1);
 
         Assertions.assertEquals(rate, rate);
         Assertions.assertEquals(rate.hashCode(), rate.hashCode());

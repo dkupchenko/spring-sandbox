@@ -7,7 +7,7 @@
     </Appenders>
     <Loggers>
         <Logger name="org.springframework.beans.factory" level="INFO"/>
-        <Logger name="info.kupchenko.sandbox.spring" level="INFO"/>
+        <Logger name="info.kupchenko.sandbox.spring" level="DEBUG"/>
         <Root level="WARN">
             <AppenderRef ref="Console"/>
         </Root>
