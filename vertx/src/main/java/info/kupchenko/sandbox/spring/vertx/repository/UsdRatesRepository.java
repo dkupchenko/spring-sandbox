@@ -2,6 +2,12 @@ package info.kupchenko.sandbox.spring.vertx.repository;
 
 import info.kupchenko.sandbox.spring.vertx.entities.Currency;
 import info.kupchenko.sandbox.spring.vertx.entities.Rate;
+import io.vertx.core.AbstractVerticle;
+import io.vertx.core.Vertx;
+import io.vertx.core.eventbus.EventBus;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 
 import java.util.concurrent.ThreadLocalRandom;
@@ -17,7 +23,12 @@ import java.util.concurrent.ThreadLocalRandom;
  */
 @Repository
 @SuppressWarnings("unused")
-public class UsdRatesRepository extends AbstractRatesRepository implements RatesRepository {
+public class UsdRatesRepository extends AbstractVerticle implements RatesRepository {
+    /**
+     * for logging using default logging system implementation
+     */
+    private static final Log log = LogFactory.getLog(UsdRatesRepository.class);
+
     /**
      * rates starts from these values
      */
@@ -29,16 +40,34 @@ public class UsdRatesRepository extends AbstractRatesRepository implements Rates
     private static final float USD_DEVIATION = 05.0000f;
 
     /**
+     * бин Vertx
+     */
+    private final Vertx vertx;
+
+    /**
+     * EventBus Rates address
+     */
+    private final String eventBusId;
+
+    /**
      * последняя запрошенная котировка
      */
     private Rate lastRate;
 
     /**
-     * конструктор по умолчанию инициализирует суперкласс экземпляром используемой валюты
+     * конструктор по умолчанию
      */
-    public UsdRatesRepository() {
-        super(Currency.USD);
-        lastRate = new Rate(currency, USD_START_RATE);
+    public UsdRatesRepository(Vertx vertx, @Value("${custom.event-bus.rate-id}") String eventBusId) {
+        this.vertx = vertx;
+        this.eventBusId = eventBusId;
+        lastRate = new Rate(Currency.USD, USD_START_RATE);
+    }
+
+    @Override
+    public void start() {
+        EventBus eventBus = vertx.eventBus();
+        vertx.setPeriodic(200, l -> eventBus.publish(eventBusId, getCurrentRate()));
+        log.debug("periodic publishing is configured");
     }
 
     /**
@@ -49,6 +78,6 @@ public class UsdRatesRepository extends AbstractRatesRepository implements Rates
     @Override
     public Rate getCurrentRate() {
         float value = lastRate.getValue() + USD_DEVIATION * (2 * ThreadLocalRandom.current().nextFloat() - 1);
-        return new Rate(currency, value);
+        return new Rate(Currency.USD, value);
     }
 }

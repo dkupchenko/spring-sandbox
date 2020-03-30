@@ -7,9 +7,9 @@ import java.util.Objects;
  *  Класс CurrencyRate описывает сущность котировки валюты
  *
  * @author Dmitry Kupchenko
- * @version 1.0
+ * @version 2.0
  * Created on 29.03.2020
- * Last review on 29.03.2020
+ * Last review on 30.03.2020
  */
 public class Rate {
     /**
@@ -24,6 +24,22 @@ public class Rate {
      * значение котировки
      */
     private final float value;
+
+    /**
+     * Конструктор котировок валют
+     *
+     * @since 2.0
+     * @param currency валюта котировки
+     * @param time время котировки
+     * @param value значение котировки
+     */
+    public Rate(Currency currency, LocalDateTime time, float value) {
+        Objects.requireNonNull(currency);
+        Objects.requireNonNull(time);
+        this.currency = currency;
+        this.time = time;
+        this.value = value;
+    }
 
     /**
      * Конструктор котировок валют, локальное время котировки считается равным времени создания объекта

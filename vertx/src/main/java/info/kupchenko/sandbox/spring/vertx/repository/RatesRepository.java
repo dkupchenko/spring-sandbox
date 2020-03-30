@@ -1,6 +1,5 @@
 package info.kupchenko.sandbox.spring.vertx.repository;
 
-import info.kupchenko.sandbox.spring.vertx.entities.Currency;
 import info.kupchenko.sandbox.spring.vertx.entities.Rate;
 
 /**
@@ -10,18 +9,11 @@ import info.kupchenko.sandbox.spring.vertx.entities.Rate;
  * использоваться будет бин с наивысшим приоритетом (<b>наименьшим порядком</b>).
  *
  * @author Dmitry Kupchenko
- * @version 1.0
+ * @version 2.0
  * Created on 29.03.2020
- * Last review on 29.03.2020
+ * Last review on 30.03.2020
  */
 public interface RatesRepository {
-    /**
-     * возвращает валюту, с которой работает данный репозиторий
-     *
-     * @return валюта
-     */
-    Currency getCurrency();
-
     /**
      * возвращает текущую котировку валюты
      *
