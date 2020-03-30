@@ -17,6 +17,7 @@
         <module>circling</module>
         <module>scheduled-timezone</module>
         <module>caching</module>
+        <module>vertx</module>
     </modules>
 
     <properties>
