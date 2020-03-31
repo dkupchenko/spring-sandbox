@@ -17,5 +17,4 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @SuppressWarnings("unused")
 public @ interface Verticle {
-    boolean worker() default false;
 }

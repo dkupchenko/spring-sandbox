@@ -27,7 +27,7 @@ import java.util.concurrent.ThreadLocalRandom;
  * Last review on 31.03.2020
  */
 @Component
-@Verticle(worker = true)
+@Verticle
 @SuppressWarnings("unused")
 public class EurRatesRepository extends AbstractVerticle implements RatesRepository {
     /**
