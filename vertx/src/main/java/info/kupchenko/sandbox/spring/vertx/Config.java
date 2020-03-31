@@ -1,8 +1,8 @@
 package info.kupchenko.sandbox.spring.vertx;
 
+import info.kupchenko.sandbox.spring.vertx.annotation.VertX;
 import info.kupchenko.sandbox.spring.vertx.entities.Rate;
 import info.kupchenko.sandbox.spring.vertx.entities.RateMessageCodec;
-import info.kupchenko.summer.context.annotation.AutoStartupLifecycle;
 import io.vertx.core.Vertx;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -10,21 +10,19 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
-import org.springframework.scheduling.annotation.EnableScheduling;
 
 /**
  * Класс Config описывает конфигурацию приложения
  *
  * @author Dmitry Kupchenko
- * @version 2.0
+ * @version 3.0
  * Created on 28.03.2020
- * Last review on 30.03.2020
+ * Last review on 31.03.2020
  */
 @Configuration
-@EnableScheduling
 @ComponentScan(basePackages = "info.kupchenko.sandbox.spring.vertx")
 @PropertySource("classpath:application.properties")
-@AutoStartupLifecycle
+@VertX
 @SuppressWarnings("unused")
 public class Config {
     /**
@@ -32,17 +30,18 @@ public class Config {
      */
     private static final Log log = LogFactory.getLog(Config.class);
 
+    /**
+     * Регистрация кодека котировок валют для шины (как таковой бин не нужен,
+     * просто конфиг - удобное место, чтобы произвести регистрацию)
+     *
+     * @param vertx бин vertx, создаётся аннотацией @VertX
+     * @return бин кодека котировок валют
+     */
     @Bean
-    public Vertx vertx() {
-        log.debug("Before creating Vertx bean");
-        Vertx vertx = Vertx.vertx();
-        vertx.eventBus().registerDefaultCodec(Rate.class, rateMessageCodec());
-        log.debug("Vertx bean is created");
-        return vertx;
-    }
-
-    @Bean
-    public RateMessageCodec rateMessageCodec() {
-        return new RateMessageCodec();
+    public RateMessageCodec rateMessageCodec(Vertx vertx) {
+        RateMessageCodec codec = new RateMessageCodec();
+        vertx.eventBus().registerDefaultCodec(Rate.class, codec);
+        log.debug("RateMessageCodec registered");
+        return codec;
     }
 }

@@ -4,15 +4,21 @@ package info.kupchenko.sandbox.spring.vertx.entities;
  * Перечисление CurrencyType содержит список обслуживаемых валют
  *
  * @author Dmitry Kupchenko
- * @version 1.0
+ * @version 3.0
  * Created on 29.03.2020
- * Last review on 30.03.2020
+ * Last review on 31.03.2020
  */
 public enum Currency {
     /**
      * enum field USD
      */
-    USD(840,"USD","US Dollar","Доллар США");
+    USD(840,"USD","US Dollar","Доллар США"),
+    /**
+     * enum field EUR
+     * @since 3.0
+     */
+    EUR(978,"EUR","Euro","Евро"),
+    ;
 
     /**
      * private field цифоровой код ИСО для валюты
