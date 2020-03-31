@@ -1,50 +1,57 @@
 package info.kupchenko.sandbox.spring.vertx.repository;
 
+import info.kupchenko.sandbox.spring.vertx.annotation.DeployOptions;
 import info.kupchenko.sandbox.spring.vertx.annotation.OnDeployError;
 import info.kupchenko.sandbox.spring.vertx.annotation.OnDeploySuccess;
 import info.kupchenko.sandbox.spring.vertx.annotation.Verticle;
 import info.kupchenko.sandbox.spring.vertx.entities.Currency;
 import info.kupchenko.sandbox.spring.vertx.entities.Rate;
 import io.vertx.core.AbstractVerticle;
+import io.vertx.core.DeploymentOptions;
+import io.vertx.core.Promise;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Repository;
+import org.springframework.stereotype.Component;
 
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
- * Класс UsdRatesRepository представляет репозиторий-заглушку по генерации
- * некоего тренда изменений котировок валюты USD
+ * Класс EurRatesRepository представляет репозиторий-заглушку по генерации
+ * некоего тренда изменений котировок валюты EUR
  *
- * @author Dmitry Kupchenko
- * @version 1.0
- * Created on 28.03.2020
- * Last review on 28.03.2020
+ * @author by Dmitry Kupchenko
+ * @version 3.0
+ * @since 3.0
+ * Created on 31.03.2020
+ * Last review on 31.03.2020
  */
-@Repository
+@Component
 @Verticle
 @SuppressWarnings("unused")
-public class UsdRatesRepository extends AbstractVerticle implements RatesRepository {
+public class EurRatesRepository extends AbstractVerticle implements RatesRepository {
     /**
      * for logging using default logging system implementation
      */
-    private static final Log log = LogFactory.getLog(UsdRatesRepository.class);
+    private static final Log log = LogFactory.getLog(EurRatesRepository.class);
 
     /**
      * rates starts from these values
      */
-    private static final float USD_START_RATE = 77.7325f;
+    private static final float START_RATE = 85.1234f;
 
     /**
      * rates deviations for concrete currency
      */
-    private static final float USD_DEVIATION = 05.0000f;
+    private static final float DEVIATION = 03.0000f;
 
     /**
      * последняя запрошенная котировка
      */
     private Rate lastRate;
+
+    @DeployOptions
+    private DeploymentOptions deploymentOptions = new DeploymentOptions().setWorker(true);
 
     /**
      * EventBus Rates address
@@ -56,22 +63,27 @@ public class UsdRatesRepository extends AbstractVerticle implements RatesReposit
      * инициализация вертикали после деплоя
      */
     @Override
-    public void start() throws Exception {
+    public void start(Promise<Void> startPromise) throws Exception {
         super.start();
-        lastRate = new Rate(Currency.USD, USD_START_RATE);
-        vertx.setPeriodic(200, l -> vertx.eventBus().publish(eventBusId, getCurrentRate()));
+        lastRate = new Rate(Currency.EUR, START_RATE);
+        vertx.setPeriodic(1500, l -> vertx.eventBus().publish(eventBusId, getCurrentRate()));
         log.debug(String.format("periodic publishing is configured%s", context.isWorkerContext() ? " as worker" : ""));
     }
 
     /**
-     * генерирует котировку валюты
+     * зенерирует новую котировку валюты со случайной задержкой
      *
-     * @return новаая котировка
+     * @return новая котировка
      */
     @Override
     public Rate getCurrentRate() {
-        float value = lastRate.getValue() + USD_DEVIATION * (2 * ThreadLocalRandom.current().nextFloat() - 1);
-        return new Rate(Currency.USD, value);
+        float value = lastRate.getValue() + DEVIATION * (2 * ThreadLocalRandom.current().nextFloat() - 1);
+        try {
+            Thread.sleep(ThreadLocalRandom.current().nextLong(2000));
+        } catch (InterruptedException e) {
+            log.error("interrupted");
+        }
+        return new Rate(Currency.EUR, value);
     }
 
     /**
