@@ -12,6 +12,7 @@ import io.vertx.core.Promise;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import java.util.concurrent.ThreadLocalRandom;
@@ -28,6 +29,7 @@ import java.util.concurrent.ThreadLocalRandom;
  */
 @Component
 @Verticle
+//@Scope("verticle")
 @SuppressWarnings("unused")
 public class EurRatesRepository extends AbstractVerticle implements RatesRepository {
     /**
@@ -50,8 +52,11 @@ public class EurRatesRepository extends AbstractVerticle implements RatesReposit
      */
     private Rate lastRate;
 
-    @DeployOptions
-    private DeploymentOptions deploymentOptions = new DeploymentOptions().setWorker(true);
+    /**
+     * Опции вертикали-воркера
+     */
+//    @DeployOptions
+//    private DeploymentOptions deploymentOptions = new DeploymentOptions().setWorker(true);
 
     /**
      * EventBus Rates address
@@ -66,7 +71,8 @@ public class EurRatesRepository extends AbstractVerticle implements RatesReposit
     public void start(Promise<Void> startPromise) throws Exception {
         super.start();
         lastRate = new Rate(Currency.EUR, START_RATE);
-        vertx.setPeriodic(1500, l -> vertx.eventBus().publish(eventBusId, getCurrentRate()));
+
+        vertx.setPeriodic(200, l -> vertx.eventBus().publish(eventBusId, getCurrentRate()));
         log.debug(String.format("periodic publishing is configured%s", context.isWorkerContext() ? " as worker" : ""));
     }
 
@@ -78,11 +84,14 @@ public class EurRatesRepository extends AbstractVerticle implements RatesReposit
     @Override
     public Rate getCurrentRate() {
         float value = lastRate.getValue() + DEVIATION * (2 * ThreadLocalRandom.current().nextFloat() - 1);
+/*
         try {
-            Thread.sleep(ThreadLocalRandom.current().nextLong(2000));
+            Thread.sleep(ThreadLocalRandom.current().nextLong(50));
         } catch (InterruptedException e) {
             log.error("interrupted");
         }
+
+ */
         return new Rate(Currency.EUR, value);
     }
 

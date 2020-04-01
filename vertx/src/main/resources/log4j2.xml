@@ -6,9 +6,10 @@
         </Console>
     </Appenders>
     <Loggers>
-        <Logger name="org.springframework.beans.factory" level="DEBUG"/>
+        <Logger name="org.springframework" level="DEBUG"/>
+        <Logger name="io.netty" level="INFO"/>
         <Logger name="info.kupchenko.sandbox.spring" level="DEBUG"/>
-        <Root level="WARN">
+        <Root level="DEBUG">
             <AppenderRef ref="Console"/>
         </Root>
     </Loggers>

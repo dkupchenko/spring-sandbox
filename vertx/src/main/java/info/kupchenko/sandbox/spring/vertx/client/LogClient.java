@@ -8,6 +8,7 @@ import io.vertx.core.AbstractVerticle;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 /**
@@ -20,6 +21,7 @@ import org.springframework.stereotype.Component;
  */
 @Component
 @Verticle
+//@Scope("verticle")
 @SuppressWarnings("unused")
 public class LogClient extends AbstractVerticle implements Client {
     /**

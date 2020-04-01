@@ -18,6 +18,11 @@ public enum Currency {
      * @since 3.0
      */
     EUR(978,"EUR","Euro","Евро"),
+    /**
+     * enum field RUB
+     * @since 3.2
+     */
+    RUB(643,"RUB","Russian Ruble","Российский рубль"),
     ;
 
     /**
