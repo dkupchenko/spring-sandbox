@@ -11,7 +11,7 @@
     </parent>
 
     <artifactId>vertx</artifactId>
-    <version>3.0.0</version>
+    <version>3.3.0</version>
     <name>vertx</name>
     <description>Demo project with Eclipse Vert.x and Spring</description>
 
@@ -20,6 +20,12 @@
             <groupId>io.vertx</groupId>
             <artifactId>vertx-core</artifactId>
             <version>3.8.5</version>
+        </dependency>
+
+        <dependency>
+            <groupId>info.kupchenko.summer</groupId>
+            <artifactId>vertx</artifactId>
+            <version>0.1.2</version>
         </dependency>
 
         <dependency>
