@@ -1,13 +1,11 @@
 package info.kupchenko.sandbox.spring.vertx.client;
 
-import info.kupchenko.sandbox.spring.vertx.annotation.OnDeployError;
-import info.kupchenko.sandbox.spring.vertx.annotation.OnDeploySuccess;
-import info.kupchenko.sandbox.spring.vertx.annotation.Verticle;
 import info.kupchenko.sandbox.spring.vertx.entities.Rate;
 import io.vertx.core.AbstractVerticle;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -20,8 +18,7 @@ import org.springframework.stereotype.Component;
  * Last review on 30.03.2020
  */
 @Component
-@Verticle
-//@Scope("verticle")
+@Scope(BeanDefinition.SCOPE_PROTOTYPE)
 @SuppressWarnings("unused")
 public class LogClient extends AbstractVerticle implements Client {
     /**
@@ -52,21 +49,5 @@ public class LogClient extends AbstractVerticle implements Client {
     @Override
     public void processCurrentRates(Rate rate) {
         log.info(rate);
-    }
-
-    /**
-     * вызывается при успешном деплое вертикали
-     */
-    @OnDeploySuccess
-    public void deploySuccess(String id) {
-        log.info(String.format("Deploy success with id [%s]", id));
-    }
-
-    /**
-     * вызывается при ошибке деплоя вертикали
-     */
-    @OnDeployError
-    public void deployError() {
-        log.error("Deploy failure");
     }
 }

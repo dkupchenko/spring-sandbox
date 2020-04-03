@@ -1,16 +1,13 @@
 package info.kupchenko.sandbox.spring.vertx.repository;
 
-import info.kupchenko.sandbox.spring.vertx.annotation.DeployOptions;
-import info.kupchenko.sandbox.spring.vertx.annotation.OnDeployError;
-import info.kupchenko.sandbox.spring.vertx.annotation.OnDeploySuccess;
-import info.kupchenko.sandbox.spring.vertx.annotation.Verticle;
 import info.kupchenko.sandbox.spring.vertx.entities.Currency;
 import info.kupchenko.sandbox.spring.vertx.entities.Rate;
+import info.kupchenko.summer.vertx.annotation.VerticleName;
 import io.vertx.core.AbstractVerticle;
-import io.vertx.core.DeploymentOptions;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Repository;
 
@@ -26,8 +23,8 @@ import java.util.concurrent.ThreadLocalRandom;
  * Last review on 28.03.2020
  */
 @Repository
-@Verticle
-//@Scope("verticle")
+@Scope(BeanDefinition.SCOPE_PROTOTYPE)
+@VerticleName()
 @SuppressWarnings("unused")
 public class UsdRatesRepository extends AbstractVerticle implements RatesRepository {
     /**
@@ -56,8 +53,6 @@ public class UsdRatesRepository extends AbstractVerticle implements RatesReposit
     @Value("${custom.event-bus.rate-id}")
     private String eventBusId;
 
-//    @DeployOptions
-//    DeploymentOptions options = new DeploymentOptions().setWorker(true);
     /**
      * инициализация вертикали после деплоя
      */
@@ -78,21 +73,5 @@ public class UsdRatesRepository extends AbstractVerticle implements RatesReposit
     public Rate getCurrentRate() {
         float value = lastRate.getValue() + USD_DEVIATION * (2 * ThreadLocalRandom.current().nextFloat() - 1);
         return new Rate(Currency.USD, value);
-    }
-
-    /**
-     * вызывается при успешном деплое вертикали
-     */
-    @OnDeploySuccess
-    public void deploySuccess(String id) {
-        log.info(String.format("Deploy success with id [%s]", id));
-    }
-
-    /**
-     * вызывается при ошибке деплоя вертикали
-     */
-    @OnDeployError
-    public void deployError() {
-        log.error("Deploy failure");
     }
 }

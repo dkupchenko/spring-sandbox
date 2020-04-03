@@ -1,14 +1,17 @@
 package info.kupchenko.sandbox.spring.vertx.repository;
 
-import info.kupchenko.sandbox.spring.vertx.annotation.OnDeployError;
-import info.kupchenko.sandbox.spring.vertx.annotation.OnDeploySuccess;
 import info.kupchenko.sandbox.spring.vertx.entities.Currency;
 import info.kupchenko.sandbox.spring.vertx.entities.Rate;
+import info.kupchenko.summer.vertx.annotation.VerticleName;
 import io.vertx.core.AbstractVerticle;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Repository;
+
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * Класс RubRatesRepository представляет репозиторий-заглушку по генерации котировок валюты RUB;
@@ -20,6 +23,8 @@ import org.springframework.stereotype.Repository;
  * Last review on 28.03.2020
  */
 @Repository
+@VerticleName(name = "rubRatesRepository")
+@Scope(BeanDefinition.SCOPE_PROTOTYPE)
 @SuppressWarnings("unused")
 public class RubRatesRepository extends AbstractVerticle implements RatesRepository {
     /**
@@ -39,7 +44,7 @@ public class RubRatesRepository extends AbstractVerticle implements RatesReposit
     @Override
     public void start() throws Exception {
         super.start();
-        vertx.setPeriodic(5000, l -> vertx.eventBus().publish(eventBusId, getCurrentRate()));
+        vertx.setPeriodic(2000, l -> vertx.eventBus().publish(eventBusId, getCurrentRate()));
         log.debug(String.format("periodic publishing is configured%s", context.isWorkerContext() ? " as worker" : ""));
     }
 

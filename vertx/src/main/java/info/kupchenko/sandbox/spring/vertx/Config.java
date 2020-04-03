@@ -1,8 +1,8 @@
 package info.kupchenko.sandbox.spring.vertx;
 
-import info.kupchenko.sandbox.spring.vertx.annotation.EnableVerticle;
 import info.kupchenko.sandbox.spring.vertx.entities.Rate;
 import info.kupchenko.sandbox.spring.vertx.entities.RateMessageCodec;
+import info.kupchenko.summer.vertx.annotation.EnableVerticle;
 import io.vertx.core.Vertx;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -22,7 +22,7 @@ import org.springframework.context.annotation.PropertySource;
 @Configuration
 @ComponentScan(basePackages = "info.kupchenko.sandbox.spring.vertx")
 @PropertySource("classpath:application.properties")
-@EnableVerticle()
+@EnableVerticle
 @SuppressWarnings("unused")
 public class Config {
     /**
